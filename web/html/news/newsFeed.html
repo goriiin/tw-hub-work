@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лента новостей</title>
+    <style>
+        .news-feed {
+            width: 70%; /* Изменили ширину на 70% */
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            overflow: auto;
+            height: 300px;
+            border: 1px solid #E4DED2;
+            padding: 10px;
+        }
+
+        .news-item {
+            border-bottom: 1px solid #e1cdb7;
+            padding: 10px;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-item h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .news-item p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .profile-menu {
+            position: fixed; /* Добавили фиксированное позиционирование */
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 100%;
+            background: lightgray;
+            padding: 10px;
+        }
+
+        .profile-menu button {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-menu">
+    <button>Профиль</button>
+    <button>Поиск автора</button>
+    <button>Выход</button>
+</div>
+
+<div class="news-feed">
+    <div class="news-list"></div>
+</div>
+
+<form id="add-news-form">
+    <h3>Добавить новость</h3>
+    <label for="title">Заголовок:</label>
+    <input type="text" id="title" name="title">
+
+
+    <label for="description">Описание:</label>
+    <input type="text" id="description" name="description">
+
+    <label for="author">Автор:</label>
+    <input type="text" id="author" name="author">
+
+    <button type="submit">Добавить</button>
+</form>
+
+<script>
+    const form = document.getElementById('add-news-form');
+    const newsList = document.querySelector('.news-list');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const titleInput = document.getElementById('title');
+        const descriptionInput = document.getElementById('description');
+        const authorInput = document.getElementById('author');
+
+        addNews(titleInput.value, descriptionInput.value, authorInput.value);
+
+        titleInput.value = '';
+        descriptionInput.value = '';
+        authorInput.value = '';
+    });
+
+    function addNews(title, description, author) {
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item';
+
+        const newsTitle = document.createElement('h2');
+        newsTitle.textContent = title;
+
+        const newsDescription = document.createElement('p');
+        newsDescription.textContent = description;
+
+        const newsAuthor = document.createElement('p'); /* Добавили элемент для автора */
+        newsAuthor.textContent = 'Автор: ' + author;
+
+        const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+        likeButton.textContent = 'Нравится';
+
+        const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
+        commentButton.textContent = 'Комментарий';
+
+        newsItem.appendChild(newsTitle);
+        newsItem.appendChild(newsDescription);
+        newsItem.appendChild(newsAuthor);
+        newsItem.appendChild(likeButton);
+        newsItem.appendChild(commentButton);
+
+        newsList.appendChild(newsItem);
+    }
+
+    // Добавляем случайные новости для тестирования
+    for (let i = 0; i < 20; i++) {
+        const title = `Заголовок новости ${i + 1}`; /* Исправили ошибку со строками */
+        const description = `Краткое описание новости ${i + 1}`;
+        const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
+        addNews(title, description, author);
+    }
+</script>
+</body>
+</html>
