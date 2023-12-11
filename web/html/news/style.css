@@ -1,0 +1,43 @@
+.news-feed {
+    width: 70%; /* Изменили ширину на 70% */
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    overflow: auto;
+    height: 100%;
+    border: 1px solid #E4DED2;
+    padding: 10px;
+}
+
+.news-item {
+    border-bottom: 1px solid #e1cdb7;
+    padding: 10px;
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-item h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.news-item p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.profile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 100%;
+    background: lightgray;
+    padding: 10px;
+}
+
+.profile-menu button {
+    display: block;
+    margin-bottom: 10px;
+}

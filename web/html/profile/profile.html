@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            background-color: #f2f2f2;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .profile-info {
+            display: flex;
+            align-items: flex-start;  /* Изменено */
+        }
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-right: 20px;   /* Новое */
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+        .show-info-btn {
+            border: none;
+            background-color: inherit;
+            padding: 14px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .show-info-btn:hover {background: #eee;}
+        .dop-info {
+            display: none;
+            margin-top: 10px;  /* Изменено */
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="profile-info">
+        <img src="_xsjeAdWBuk.jpg" alt="Профильная фотография" class="profile-pic">
+        <div class="user-info">
+            <h1>Имя пользователя</h1>
+            <p>Краткая информация о пользователе</p>
+            <button class="show-info-btn">Показать информацию</button>
+            <div class="dop-info">
+                <h2>Дополнительная информация</h2>
+                <p>Информация о пользователе</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    const showInfoBtn = document.querySelector('.show-info-btn');
+    const dopInfo = document.querySelector('.dop-info');
+    let isInfoVisible = false;
+
+    showInfoBtn.addEventListener('click', function() {
+        isInfoVisible = !isInfoVisible;
+        dopInfo.style.display = isInfoVisible ? 'block' : 'none';
+        showInfoBtn.innerText = isInfoVisible ? 'Скрыть информацию' : 'Показать информацию';
+    });
+</script>
+</body>
+</html>
