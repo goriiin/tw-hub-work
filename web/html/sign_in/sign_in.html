@@ -11,25 +11,17 @@
     <div class="sign_in">
         <div class="content">
             <h2>Sign In</h2>
-            <div class="form">
-                <div class="inputBox">
-                    <label>
-                        <input class="form" type="text" placeholder="Username" required>
-                    </label>
-                </div>
-                <div class="inputBox">
-                    <label>
-                        <input class="form" type="password" placeholder="Password" required >
-                    </label>
-                </div>
-                <div class="links">
-                    <a href="#">Forgot Password</a>
-                    <a href="#">Signup</a>
-                </div>
-                <div class="inputBox">
-                    <input type="submit" class="but" value="Login">
-                </div>
+            <form class="form" action="/reg" method="post">
+                <input class="form" type="text" placeholder="email" name="email" id="email" required>
+                <input class="form" type="text" placeholder="Username" name="username" id="username" required>
+                <input class="form" type="password" placeholder="Password" name="password" id="password" required>
+                <input type="submit" class="but" value="Login">
+            </form>
+            <div class="links">
+                <a href="#">Forgot Password</a>
+                <a href="#">Signup</a>
             </div>
+
         </div>
     </div>
 </div>
