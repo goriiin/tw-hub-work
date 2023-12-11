@@ -1,36 +1,46 @@
-package main
+package db
 
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v4"
-	"net/url"
 	"os"
 )
 
 func main() {
-	connStr := fmt.Sprintf("%s://%s:%s@%s:%s?sslmode=disable&connect_timeout=%d//",
-		"postgres",
-		url.QueryEscape("postgres"),
-		url.QueryEscape("123"),
-		"localhost",
-		"54320",
-		"twit-hub",
-		5)
+	var cfg Config
+	if err := cfg.ReadConfig(); err != nil {
 
-	ctx, _ := context.WithCancel(context.Background())
+	}
 
-	conn, err := pgx.Connect(ctx, connStr)
+	poolConfig, err := NewPoolConfig(&cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "connect to db failed: %v\n", err)
 		os.Exit(1)
 	}
 	fmt.Println("Connection OK")
 
-	//сделаем пустой запрос
-	err = conn.Ping(ctx)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "ping failed: %v\n", err)
-		os.Exit(1)
+	poolConfig.MaxConns = 5
+
+	conn, err := NewConnection(poolConfig)
+
+	_, err = conn.Exec(context.Background(), ";")
+
+	for i := 0; i < 5; i++ {
+		go func(count int) {
+			_, err = conn.Exec(context.Background(), ";")
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ping failed: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Println(count, "Query OK!")
+			fmt.Printf("connections - MAX: %d, "+
+				"Iddle: %d, "+
+				"Total: %d \n",
+				conn.Stat().MaxConns(),
+				conn.Stat().IdleConns(),
+				conn.Stat().TotalConns())
+		}(i)
 	}
+
+	select {}
 }
