@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"twit-hub111/internal/db/domens"
 )
 
 func main() {
-	var cfg Config
+	var cfg domens.Config
 	if err := cfg.ReadConfig(); err != nil {
 
 	}
 
-	poolConfig, err := NewPoolConfig(&cfg)
+	poolConfig, err := domens.NewPoolConfig(&cfg)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "connect to db failed: %v\n", err)
 		os.Exit(1)
@@ -21,7 +22,7 @@ func main() {
 
 	poolConfig.MaxConns = 5
 
-	conn, err := NewConnection(poolConfig)
+	conn, err := domens.NewConnection(poolConfig)
 
 	_, err = conn.Exec(context.Background(), ";")
 
