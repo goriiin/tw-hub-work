@@ -1,0 +1,6 @@
+Host: localhost
+Port: "54320"
+Username: "postgres"
+Password: "123"
+DbName: "twit_hub"
+Timeout: 5

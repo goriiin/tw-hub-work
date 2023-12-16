@@ -1,0 +1,12 @@
+version: '3'
+services:
+  pgdb:
+    image: "postgres:latest"
+    container_name: "pgdb"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+    ports:
+      - "54320:5432"
+    volumes:
+      - /home/dmitry/Desktop/twit-hub111/internal/db/data:/var/lib/postgresql/data

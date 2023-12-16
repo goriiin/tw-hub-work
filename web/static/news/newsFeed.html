@@ -1,0 +1,211 @@
+<!--{{ define "body" }}-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Лента новостей</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .news-feed {
+            width: 70%; /* Изменили ширину на 70% */
+            font-family: Arial, sans-serif;
+            overflow: auto;
+            height: calc(100% - 60px);
+        }
+
+        .news-item {
+            border-bottom: 1px solid #141414;
+            background: #3d3b39;
+            padding: 10px;
+            color: #eeeeee;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-item h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .news-item p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .profile-menu a {
+            text-align: left;
+            display: inline-block;
+            /*display: block;*/
+            margin-bottom: 10px;
+            color: #d7d7d7;
+            font-size: 25px;
+            text-decoration-line: none;
+        }
+
+        .profile-menu a:hover {
+            background-color: #555;
+        }
+
+        .topnav {
+            width: 100%;
+            background-color: #333;
+            overflow: hidden;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 35px;
+        }
+
+        .profile-menu {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 150px;
+            height: calc(100% - 60px);
+            background: rgb(20, 20, 20);
+            padding: 10px;
+        }
+
+        .body-back{
+            background: rgb(20, 20, 20);
+        }
+
+        .heart-btn {
+            background-color: #555555;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30%;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .heart-btn:hover {
+            background-color: lightgray;
+        }
+
+        .heart-btn.active {
+            background-color: red;
+        }
+
+        .form-container{
+
+            position: fixed;
+            top: 60px;
+            right: 150px;
+        }
+
+        .form-container input[type="text"], .form-container button {
+
+            float: right;
+            margin: 14px 16px;
+            font-size: 16px;
+            padding: 8px 10px;
+            border: none;
+            -webkit-appearance: none;
+        }
+
+        .form-container input[type="text"] {
+            width: 60%;
+        }
+
+        .form-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+        }
+
+        .form-container {
+            position: relative;
+        }
+
+        #own-news {
+            padding-right: 100px; /* Резервируем место для кнопки в конце поля ввода */
+        }
+
+        #own-news-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body class="body-back">
+
+<div class="topnav">
+    <a href="#">Twit-hub</a>
+
+</div>
+<div class="profile-menu">
+    <a href="#">Профиль</a>
+    <a href="#">Поиск автора</a>
+    <a href="#">Выход</a>
+</div>
+<div class="form-container">
+    <input type="text" id="own-news" placeholder="Введите свою новость">
+    <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
+</div>
+<div class="news-feed">
+    <div class="news-list"></div>
+</div>
+</body>
+<script>
+    const newsList = document.querySelector('.news-list');
+
+    function addNews(author, description) {
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item';
+
+        const newsDescription = document.createElement('p');
+        newsDescription.textContent = description;
+
+        const newsAuthor = document.createElement('p'); /* Добавили элемент для автора */
+        newsAuthor.textContent = 'Автор: ' + author;
+
+        const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+        likeButton.textContent = '❤';
+        likeButton.className = 'heart-btn';
+        likeButton.onclick = 'changeColor()';
+
+        // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
+        // commentButton.textContent = 'Комментарий';
+
+        newsItem.appendChild(newsDescription);
+        newsItem.appendChild(newsAuthor);
+        newsItem.appendChild(likeButton);
+        // newsItem.appendChild(commentButton);
+
+        newsList.appendChild(newsItem);
+    }
+
+    // Добавляем случайные новости для тестирования
+    for (let i = 0; i < 100; i++) {
+        const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
+        const description = `Краткое описание новости ${i + 1}`;
+        addNews(author, description);
+    }
+
+    function changeColor() {
+        var btn = document.querySelector('.heart-btn');
+        btn.classList.toggle('active');
+    }
+</script>
+</html>
+<!--{{ end }}-->

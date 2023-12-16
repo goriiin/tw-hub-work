@@ -37,7 +37,7 @@
     padding: 10px;
 }
 
-.profile-menu button {
+.profile-menu a {
     display: block;
     margin-bottom: 10px;
 }
