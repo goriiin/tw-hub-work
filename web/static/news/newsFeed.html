@@ -10,7 +10,9 @@
             width: 70%; /* Изменили ширину на 70% */
             font-family: Arial, sans-serif;
             overflow: auto;
-            height: calc(100% - 60px);
+            height: calc(100% - 120px);
+            position: relative;
+            top: 120px;
         }
 
         .news-item {
@@ -49,6 +51,7 @@
         }
 
         .topnav {
+            z-index: 1001;
             width: 100%;
             background-color: #333;
             overflow: hidden;
@@ -101,10 +104,8 @@
         }
 
         .form-container{
-
-            position: fixed;
-            top: 60px;
-            right: 150px;
+            top: 62px;
+            right: 250px;
         }
 
         .form-container input[type="text"], .form-container button {
@@ -118,18 +119,18 @@
         }
 
         .form-container input[type="text"] {
-            width: 60%;
+            width: 100%;
         }
 
         .form-container button {
-            background-color: #4CAF50;
+            background-color: #141414;
             color: white;
             border: none;
             cursor: pointer;
         }
 
         .form-container button:hover {
-            background-color: #45a049;
+            background-color: #141414;
         }
 
         .form-container {
@@ -137,7 +138,7 @@
         }
 
         #own-news {
-            padding-right: 100px; /* Резервируем место для кнопки в конце поля ввода */
+            /*padding-right: 100px; !* Резервируем место для кнопки в конце поля ввода *!*/
         }
 
         #own-news-btn {
@@ -145,6 +146,11 @@
             top: 0;
             right: 0;
         }
+
+        .topnav a, .profile-menu a{
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
     </style>
 </head>
 <body class="body-back">
@@ -158,14 +164,20 @@
     <a href="#">Поиск автора</a>
     <a href="#">Выход</a>
 </div>
-<div class="form-container">
-    <input type="text" id="own-news" placeholder="Введите свою новость">
-    <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
-</div>
+
+
 <div class="news-feed">
-    <div class="news-list"></div>
+    <div class="form-container">
+        <input type="text" id="own-news" placeholder="Введите свою новость">
+        <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
+    </div>
+
+    <div class="news-list">
+
+    </div>
 </div>
 </body>
+
 <script>
     const newsList = document.querySelector('.news-list');
 
