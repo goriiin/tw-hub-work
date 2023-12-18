@@ -53,8 +53,8 @@ func MustLoad() *LocalConfig {
 	return &cfg
 }
 
-func ReadConfig() (*DbConfig, error) {
-	yFile, err := os.ReadFile("dbConf.yaml")
+func ReadConfig(pathToDB string) (*DbConfig, error) {
+	yFile, err := os.ReadFile(pathToDB)
 	if err != nil {
 		log.Fatalf("cannot read config: %s", err)
 		return nil, err

@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"log/slog"
-	"net/http"
 	"os"
-	"text/template"
 	"twit-hub111/internal/config"
+	"twit-hub111/internal/db/postgres"
 )
 
 //https://qna.habr.com/q/915835
@@ -17,21 +16,21 @@ const (
 	envProd  = "prod"
 )
 
-func news(w http.ResponseWriter, r *http.Request) {
-	temp := template.Must(template.ParseFiles("web/news/newsFeed.html"))
-
-	fmt.Println("Rendering news template")
-	err := temp.ExecuteTemplate(w, "body", nil)
-	if err != nil {
-		fmt.Fprintf(w, err.Error())
-	}
-
-	//w.Header().Set("Content-Type", "text/html")
-	//http.ServeFile(w, r, "web/news/newsFeed.html")
-}
+//func news(w http.ResponseWriter, r *http.Request) {
+//	temp := template.Must(template.ParseFiles("web/news/newsFeed.html"))
+//
+//	fmt.Println("Rendering news template")
+//	err := temp.ExecuteTemplate(w, "body", nil)
+//	if err != nil {
+//        _, _ = fmt.Fprintf(w, err.Error())
+//	}
+//
+//	//w.Header().Set("Content-Type", "text/html")
+//	//http.ServeFile(w, r, "web/news/newsFeed.html")
+//}
 
 func main() {
-
+	setupENV()
 	cfg := config.MustLoad()
 
 	// TODO: init logger: slog
@@ -41,6 +40,25 @@ func main() {
 	log.Debug("debug enabled")
 
 	// TODO: init storage: postgres
+	storage, err := postgres.New(cfg.DbConfigPath)
+	fmt.Println(cfg.DbConfigPath)
+	if err != nil {
+		log.Error("db error", err)
+		os.Exit(1)
+	}
+
+	err = storage.SetDB()
+	if err != nil {
+		log.Error("set db tables error", err)
+		os.Exit(1)
+	}
+
+	log.Info("DB started")
+
+	err = storage.TestSelect()
+	if err != nil {
+		log.Error("database tables have not been created", err)
+	}
 
 	// TODO: init router: chi, "chi render"
 

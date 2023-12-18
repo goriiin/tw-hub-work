@@ -6,40 +6,10 @@
     <title>Лента новостей</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .news-feed {
-            width: 70%; /* Изменили ширину на 70% */
-            font-family: Arial, sans-serif;
-            overflow: auto;
-            height: calc(100% - 120px);
-            position: relative;
-            top: 120px;
-        }
-
-        .news-item {
-            border-bottom: 1px solid #141414;
-            background: #3d3b39;
-            padding: 10px;
-            color: #eeeeee;
-        }
-
-        .news-item:last-child {
-            border-bottom: none;
-        }
-
-        .news-item h2 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .news-item p {
-            margin: 5px 0;
-            font-size: 14px;
-        }
-
         .profile-menu a {
             text-align: left;
-            display: inline-block;
-            /*display: block;*/
+            /*display: inline-block;*/
+            display: block;
             margin-bottom: 10px;
             color: #d7d7d7;
             font-size: 25px;
@@ -103,23 +73,51 @@
             background-color: red;
         }
 
-        .form-container{
-            top: 62px;
-            right: 250px;
+        .news-feed {
+            order: 2;
+            /*width: 70%; !* Изменили ширину на 70% *!*/
+            font-family: Arial, sans-serif;
+            overflow: auto;
+            height: calc(100% - 120px);
+            position: relative;
+            top: 30px;
+            border-radius: 10px;
         }
 
-        .form-container input[type="text"], .form-container button {
+        .news-item {
+            border-bottom: 1px solid #141414;
+            background: #3d3b39;
+            padding: 10px;
+            color: #eeeeee;
+        }
 
-            float: right;
-            margin: 14px 16px;
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-item h2 {
+            margin: 0;
             font-size: 16px;
-            padding: 8px 10px;
-            border: none;
-            -webkit-appearance: none;
         }
 
-        .form-container input[type="text"] {
-            width: 100%;
+        .news-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        .form-container textarea {
+            resize: none;
+            height: 150px;
+            border-radius: 10px;
+            overflow: auto;
+            border-width: 0;
+            display: inline-block;
+            width: 100% !important;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
         }
 
         .form-container button {
@@ -129,32 +127,38 @@
             cursor: pointer;
         }
 
+        .news-list{
+            margin-top: 36px;
+        }
+
+        .aaaaa {
+            display: flex;
+            flex-direction: column;
+            margin-top: 60px;
+        }
         .form-container button:hover {
             background-color: #141414;
         }
 
         .form-container {
+            order: 1;
+            margin-top: 10px;
+            align-self: center;
             position: relative;
         }
 
-        #own-news {
-            /*padding-right: 100px; !* Резервируем место для кнопки в конце поля ввода *!*/
-        }
-
         #own-news-btn {
-            position: absolute;
-            top: 0;
-            right: 0;
+            position: absolute; /* устанавливаем позицию кнопки как absolute */
+            top: 100%; /* размещаем кнопку внизу относительно родительского блока */
+            right: 0; /* выравниваем кнопку слева от родительского блока */
+            background: #587a60;
         }
-
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
-
     </style>
 </head>
 <body class="body-back">
-
 <div class="topnav">
     <a href="#">Twit-hub</a>
 
@@ -165,15 +169,18 @@
     <a href="#">Выход</a>
 </div>
 
+<div class="aaaaa">
 
-<div class="news-feed">
-    <div class="form-container">
-        <input type="text" id="own-news" placeholder="Введите свою новость">
-        <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
-    </div>
+    <div class="news-feed">
+        <div class="form-container">
+            <form>
+                <textarea type="text" id="own-news" placeholder="Введите свою новость"></textarea>
+                <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
+            </form>
+        </div>
+        <div class="news-list">
 
-    <div class="news-list">
-
+        </div>
     </div>
 </div>
 </body>

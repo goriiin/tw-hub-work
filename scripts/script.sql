@@ -140,3 +140,68 @@ create view twit_author as
     select twit.id, text, photo, author_id, nick
 from twit
 join tw_user tu on tu.id = twit.author_id;
+
+------------------------------------------------------------
+
+
+create table if not exists sign_up_user
+(
+    id       serial
+        primary key,
+    email    text        not null
+        unique
+        constraint sign_up_email_check
+            check (email ~~ '%@%.%'::text),
+    nick     varchar(50) not null unique,
+    pass     varchar(50) not null,
+    old_pass varchar(50) not null
+);
+
+create table if not exists tw_user
+(
+    id serial primary key,
+    nickname varchar(50) not null unique,
+    reg_data timestamp not null,
+    email    text        not null
+        constraint client_email_check
+            check (email ~~ '%@%.%'::text),
+    alive bool not null
+);
+
+create table if not exists follows
+(
+    id serial primary key,
+    user_id integer not null,
+    subscribe_to_id integer not null,
+
+    foreign key (user_id) references tw_user(id),
+    foreign key (subscribe_to_id) references tw_user(id)
+);
+
+create table if not exists content
+(
+    id serial primary key,
+    text text,
+    photo text
+);
+
+
+create table if not exists posts
+(
+    id serial primary key,
+    author_id integer not null,
+    content_id integer not null,
+
+    foreign key (author_id) references tw_user(id),
+    foreign key (content_id ) references content(id)
+);
+
+create table if not exists likes
+(
+    id serial primary key,
+    user_id integer not null,
+    post_id integer not null,
+
+    foreign key (user_id) references tw_user(id),
+    foreign key (post_id) references posts(id)
+);
