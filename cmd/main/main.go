@@ -44,7 +44,6 @@ func main() {
 	//	os.Exit(1)
 	//}
 
-	// TODO: сделать время для поста
 	log.Info("DB started")
 
 	err = storage.TestSelect()

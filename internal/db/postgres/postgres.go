@@ -2,20 +2,31 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/lib/pq"
 	"log"
 	"os"
+	"strings"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/domain"
 )
 
-// TODO: сделать обработку ошибок UNIQUE для регов и пользователей
+var (
+	// ErrUserExists         = errors.New("user already exists")
+	ErrUserNotFound       = errors.New("user not found")
+	ErrDuplicateUserName  = errors.New("duplicate username")
+	ErrDuplicateUserEmail = errors.New("duplicate email")
+)
 
 type Storage struct {
 	db *pgxpool.Pool
 }
 
+// TODO: сделать обработку ошибок UNIQUE для регов и пользователей
+// TODO: объединение sign_up_user и tw_user
+// TODO: сделать время для поста
 const (
 	setDB = `
 create table if not exists sign_up_user
@@ -166,11 +177,21 @@ func (s *Storage) InsertRegUser(ctx context.Context, reg *domain.SignUpUser) (in
 	var id int
 	err := s.db.QueryRow(ctx,
 		`insert into sign_up_user(email, nick, pass, old_pass) 
-            values ($1, $2, $3, $4)`,
-		reg.Email, reg.Nick, reg.Pass, reg.OldPass).Scan(&id)
-	if err != nil {
-		_ = fmt.Errorf("%s : %w", op, err)
-		return -1, err
+            values ($1, $2, $3, $4)
+            on conflict (email, nick) do nothing
+            returning id;`,
+		reg.Email, reg.Nick, reg.Pass, reg.OldPass,
+	).Scan(&id)
+	var pgErr *pq.Error
+	if errors.As(err, &pgErr) {
+		if pgErr.Code.Name() == "unique_violation" {
+			if strings.Contains(pgErr.Message, "tw_user_email_key") {
+				return -1, ErrDuplicateUserEmail
+			} else if strings.Contains(pgErr.Message, "tw_user_nick_key") {
+				return -1, ErrDuplicateUserName
+			}
+		}
+		return -1, fmt.Errorf("%s : %w", op, err)
 	}
 	return id, nil
 }
@@ -181,11 +202,20 @@ func (s *Storage) InsertUser(ctx context.Context, u *domain.User) (int, error) {
 	var id int
 	err := s.db.QueryRow(ctx,
 		`insert into tw_user(nick, reg_date, email, alive) 
-            values ($1, now(), $2, $3)`,
+            values ($1, now(), $2, $3) 
+            on conflict (email, nick) do nothing
+            returning id;`,
 		u.Nick, u.Email, u.Alive).Scan(&id)
-	if err != nil {
-		_ = fmt.Errorf("%s : %w", op, err)
-		return -1, err
+	var pgErr *pq.Error
+	if errors.As(err, &pgErr) {
+		if pgErr.Code.Name() == "unique_violation" {
+			if strings.Contains(pgErr.Message, "tw_user_email_key") {
+				return -1, ErrDuplicateUserEmail
+			} else if strings.Contains(pgErr.Message, "tw_user_nick_key") {
+				return -1, ErrDuplicateUserName
+			}
+		}
+		return -1, fmt.Errorf("%s : %w", op, err)
 	}
 	return id, nil
 }
