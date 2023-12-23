@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 	"gopkg.in/yaml.v2"
 	"log"
+	"log/slog"
 	"net/url"
 	"os"
 	"time"
@@ -96,4 +97,35 @@ func NewConnection(poolConfig *pgxpool.Config) (*pgxpool.Pool, error) {
 	}
 
 	return conn, nil
+}
+
+func SetupENV() {
+	err := os.Setenv("CONFIG_PATH", "./config/local.yaml")
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+}
+
+const (
+	envLocal = "local"
+	envDev   = "dev"
+	envProd  = "prod"
+)
+
+func SetupLogger(env string) *slog.Logger {
+	var logger *slog.Logger
+
+	switch env {
+	case envLocal:
+		logger = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	case envDev:
+		logger = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	case envProd:
+		logger = slog.New(
+			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	}
+
+	return logger
 }

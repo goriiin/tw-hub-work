@@ -1,45 +1,32 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"log/slog"
+	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
+	"twit-hub111/internal/http-server/handlers/news"
 )
 
 //https://qna.habr.com/q/915835
 
-const (
-	envLocal = "local"
-	envDev   = "dev"
-	envProd  = "prod"
-)
-
-//func news(w http.ResponseWriter, r *http.Request) {
-//	temp := template.Must(template.ParseFiles("web/news/newsFeed.html"))
-//
-//	fmt.Println("Rendering news template")
-//	err := temp.ExecuteTemplate(w, "body", nil)
-//	if err != nil {
-//        _, _ = fmt.Fprintf(w, err.Error())
-//	}
-//
-//	//w.Header().Set("Content-Type", "text/html")
-//	//http.ServeFile(w, r, "web/news/newsFeed.html")
-//}
-
 func main() {
-	setupENV()
+	config.SetupENV()
 	cfg := config.MustLoad()
 
-	// TODO: init logger: slog
-	log := setupLogger(cfg.Env)
+	log := config.SetupLogger(cfg.Env)
 
 	log.Info("starting...", slog.String("env", cfg.Env))
 	log.Debug("debug enabled")
 
-	// TODO: init storage: postgres
 	storage, err := postgres.New(cfg.DbConfigPath)
 	fmt.Println(cfg.DbConfigPath)
 	if err != nil {
@@ -47,12 +34,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = storage.SetDB()
-	if err != nil {
-		log.Error("set db tables error", err)
-		os.Exit(1)
-	}
+	//storage.DropDB()
+	//err = storage.SetDB()
+	//if err != nil {
+	//	log.Error("set db tables error", err)
+	//	os.Exit(1)
+	//}
 
+	// TODO: сделать время для поста
 	log.Info("DB started")
 
 	err = storage.TestSelect()
@@ -60,38 +49,47 @@ func main() {
 		log.Error("database tables have not been created", err)
 	}
 
-	// TODO: init router: chi, "chi render"
+	router := chi.NewRouter()
 
-	//TODO: init server
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
-	//db.Test()
-	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/news"))))
-	//http.HandleFunc("/news", news)
-	//http.ListenAndServe(":8080", nil)
-}
+	router.Get("/news", news.News)
+	router.Post("/news", news.NewPost)
 
-func setupLogger(env string) *slog.Logger {
-	var log *slog.Logger
+	log.Info("starting server", slog.String("address", cfg.Address))
 
-	switch env {
-	case envLocal:
-		log = slog.New(slog.NewTextHandler(
-			os.Stdout,
-			&slog.HandlerOptions{Level: slog.LevelDebug}))
-	case envDev:
-		log = slog.New(
-			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	case envProd:
-		log = slog.New(
-			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
 	}
 
-	return log
-}
+	go func() {
+		if err := srv.ListenAndServe(); err != nil {
+			log.Error("failed to start server")
+		}
+	}()
 
-func setupENV() {
-	err := os.Setenv("CONFIG_PATH", "./config/local.yaml")
-	if err != nil {
-		fmt.Println("err: ", err)
+	log.Info("server started")
+
+	<-done
+	log.Info("stopping server")
+
+	// TODO: move timeout to config
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Error("failed to stop server")
+
+		return
 	}
 }

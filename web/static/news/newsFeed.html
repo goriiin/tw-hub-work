@@ -1,25 +1,11 @@
-<!--{{ define "body" }}-->
+{{ define "body" }}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Лента новостей</title>
-    <link rel="stylesheet" href="style.css">
+<!--    <link rel="stylesheet" href="style.css">-->
     <style>
-        .profile-menu a {
-            text-align: left;
-            /*display: inline-block;*/
-            display: block;
-            margin-bottom: 10px;
-            color: #d7d7d7;
-            font-size: 25px;
-            text-decoration-line: none;
-        }
-
-        .profile-menu a:hover {
-            background-color: #555;
-        }
-
         .topnav {
             z-index: 1001;
             width: 100%;
@@ -38,16 +24,6 @@
             padding: 14px 16px;
             text-decoration: none;
             font-size: 35px;
-        }
-
-        .profile-menu {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            width: 150px;
-            height: calc(100% - 60px);
-            background: rgb(20, 20, 20);
-            padding: 10px;
         }
 
         .body-back{
@@ -131,10 +107,36 @@
             margin-top: 36px;
         }
 
+        .profile-menu {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 150px;
+            height: calc(100% - 60px);
+            background: rgb(20, 20, 20);
+            padding: 10px;
+            z-index: 1;
+        }
+        .profile-menu a {
+            text-align: left;
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #d7d7d7;
+            font-size: 25px;
+            text-decoration-line: none;
+        }
+
+        .profile-menu a:hover {
+            background-color: #555;
+        }
+
         .aaaaa {
-            display: flex;
+            margin-left: 210px;
+            margin-right: 100px;
+            display: block;
             flex-direction: column;
             margin-top: 60px;
+            z-index: 2;
         }
         .form-container button:hover {
             background-color: #141414;
@@ -156,21 +158,14 @@
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+
     </style>
 </head>
 <body class="body-back">
 <div class="topnav">
     <a href="#">Twit-hub</a>
-
 </div>
-<div class="profile-menu">
-    <a href="#">Профиль</a>
-    <a href="#">Поиск автора</a>
-    <a href="#">Выход</a>
-</div>
-
 <div class="aaaaa">
-
     <div class="news-feed">
         <div class="form-container">
             <form>
@@ -182,6 +177,12 @@
 
         </div>
     </div>
+</div>
+
+<div class="profile-menu">
+    <a href="#">Профиль</a>
+    <a href="#">Поиск автора</a>
+    <a href="#">Выход</a>
 </div>
 </body>
 
@@ -215,7 +216,7 @@
     }
 
     // Добавляем случайные новости для тестирования
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
         const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
         const description = `Краткое описание новости ${i + 1}`;
         addNews(author, description);
@@ -225,6 +226,73 @@
         var btn = document.querySelector('.heart-btn');
         btn.classList.toggle('active');
     }
+
+    // document.getElementById('photo-upload').addEventListener('change', function() {
+    //     var file = this.files[0];
+    //     var reader = new FileReader();
+    //     reader.onload = function(e) {
+    //         var imageBase64 = e.target.result;
+    //         console.log('Image converted to base64:', imageBase64);
+    //     };
+    //     reader.readAsDataURL(file);
+    // });
+
+    function addOwnNews() {
+        const text = document.getElementById('own-news').value;
+
+        fetch('/news', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: text })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Ошибка:', error));
+    }
+
+    // arm_url = location.protocol + "//" + location.host + "/armstrong/calculate.json";
+    // function send_query(){
+    //     var frm = document.forms.calc_form;
+    //     var param_str = "?n=" + encodeURIComponent(frm.n.value);
+    //     var http_request = new XMLHttpRequest();
+    //     http_request.open("GET", arm_url + param_str, true);
+    //     http_request.onreadystatechange = function (){
+    //         var done = 4, ok = 200;
+    //         if (http_request.readyState == done && http_request.status == ok){
+    //             my_JSON_object = JSON.parse(http_request.responseText);
+    //             show_result(my_JSON_object);
+    //         }
+    //         else {
+    //             show_bad_request();
+    //         }
+    //     };
+    //     http_request.send(null);
+    //     return false;
+    // }
+    //
+    // function show_result(data){
+    //     console.log(data);
+    //     var result = document.getElementById("result");
+    //     var frm = document.forms["calc_form"];
+    //     result.innerHTML = "<h1>Вход: " + frm.n.value + "</h1>";
+    //
+    //     var tableHTML = '<table>'; // Start of the table
+    //     tableHTML += '<tr><th>Index</th><th>Value</th></tr>'; // Table header
+    //
+    //     for (let i = 0; i < data.value.length; i++){
+    //         tableHTML += '<tr><td>' + (i+1) + '' + data.value[i] + '</td></tr>';
+    //     }
+    //
+    //     tableHTML += '</table>'; // End of the table
+    //     result.innerHTML += tableHTML;
+    // }
+    //
+    // function show_bad_request(){
+    //     var result  = document.getElementById("result")
+    //     result.innerHTML = "<hr/>Bad<hr/>"
+    // }
 </script>
 </html>
-<!--{{ end }}-->
+{{ end }}
