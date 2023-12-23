@@ -15,6 +15,7 @@ import (
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/http-server/handlers/news"
+	"twit-hub111/internal/http-server/handlers/user"
 )
 
 //https://qna.habr.com/q/915835
@@ -65,6 +66,7 @@ func main() {
 	router.Get("/news", news.News)
 	router.Post("/news", news.NewPost)
 
+	router.Get("/profile", user.Users)
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	done := make(chan os.Signal, 1)
