@@ -48,16 +48,32 @@ func (s *serverAPI) Login(
 		return nil, status.Error(codes.InvalidArgument, "password not required")
 	}
 
-	_, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
+	token, err := s.auth.Login(ctx, req.GetEmail(), req.GetPassword(), int(req.GetAppId()))
 	if err != nil {
+		// TODO: обработка ошибок
 		return nil, status.Error(codes.InvalidArgument, "internal error")
 	}
 
 	return &ssov1.LoginResponse{
-		Token: req.GetEmail(),
+		Token: token,
 	}, nil
 }
 
-func (c *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error) {
-	panic("implement me")
+func (s *serverAPI) Register(ctx context.Context, req *ssov1.RegisterRequest) (*ssov1.RegisterResponse, error) {
+	if _, err := mail.ParseAddress(req.GetEmail()); err != nil {
+		return nil, status.Error(codes.InvalidArgument, "email not valid")
+	}
+
+	if req.GetPassword() == "" {
+		return nil, status.Error(codes.InvalidArgument, "password not required")
+	}
+
+	userID, err := s.auth.RegisterNewUser(ctx, req.GetEmail(), req.GetPassword())
+	if err != nil {
+		// TODO: обработка ошибок
+		return nil, status.Error(codes.InvalidArgument, "internal error")
+	}
+	return &ssov1.RegisterResponse{
+		UserId: userID,
+	}, nil
 }

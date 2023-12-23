@@ -13,7 +13,7 @@ import "time"
 type User struct {
 	Id      int       `json:"id: int"`
 	Nick    string    `json:"nick"`
-	RegDate time.Time `json:"reg_data"`
+	RegDate time.Time `json:"reg_data,omitempty"`
 	Email   string    `json:"email"`
-	Alive   bool      `json:"alive"`
+	Alive   bool      `json:"alive,omitempty"`
 }
