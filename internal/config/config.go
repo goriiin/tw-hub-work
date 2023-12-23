@@ -26,12 +26,19 @@ type LocalConfig struct {
 	Env          string `yaml:"env" env-default:"local"`
 	DbConfigPath string `yaml:"db_conf_path"`
 	HTTPServer   `yaml:"http_server"`
+	TokenTTL     time.Duration `yaml:"token_ttl" env-required:"true"`
+	GRPC         GRPCConfig    `yaml:"grpc"`
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-default:"localhost:8080"`
-	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
-	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+	Address     string        `yaml:"address" env-required:"true"`
+	Timeout     time.Duration `yaml:"timeout" env-required:"true"`
+	IdleTimeout time.Duration `yaml:"idle_timeout" env-required:"true"`
+}
+
+type GRPCConfig struct {
+	Port    int           `yaml:"grpc_port" env-default:"44044"`
+	Timeout time.Duration `yaml:"grpc_timeout" env-default:"5s"`
 }
 
 func MustLoad() *LocalConfig {

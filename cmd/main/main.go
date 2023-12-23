@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"twit-hub111/internal/app"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/http-server/handlers/news"
@@ -22,6 +23,7 @@ func main() {
 	config.SetupENV()
 	cfg := config.MustLoad()
 
+	fmt.Println(cfg)
 	log := config.SetupLogger(cfg.Env)
 
 	log.Info("starting...", slog.String("env", cfg.Env))
@@ -48,6 +50,10 @@ func main() {
 	if err != nil {
 		log.Error("database tables have not been created", err)
 	}
+
+	application := app.New(log, cfg.GRPC.Port, cfg.TokenTTL)
+
+	go application.GRPCServer.MustRun()
 
 	router := chi.NewRouter()
 
@@ -83,7 +89,6 @@ func main() {
 	<-done
 	log.Info("stopping server")
 
-	// TODO: move timeout to config
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -92,4 +97,13 @@ func main() {
 
 		return
 	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
+
+	sign := <-stop
+
+	log.Info("stopping grpc-app", slog.String("signal", sign.String()))
+
+	application.GRPCServer.Stop()
 }
