@@ -2,8 +2,6 @@ package domain
 
 import "time"
 
-// TODO: добавление времени
-
 type Twit struct {
 	Id       int       `json:"id,omitempty"`
 	AuthorId int       `json:"author_id,omitempty"`

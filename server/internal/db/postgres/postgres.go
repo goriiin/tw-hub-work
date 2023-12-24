@@ -107,7 +107,7 @@ func New(pathToDB string, l *slog.Logger) (*Storage, error) {
 	}, nil
 }
 
-// SetDB
+// SetDB - создание таблиц
 func (s *Storage) SetDB() error {
 	const op = "db.postgres.SetDB"
 	s.log.With(op)
@@ -120,7 +120,7 @@ func (s *Storage) SetDB() error {
 	return nil
 }
 
-// DropDB
+// DropDB - удаление всех таблиц
 func (s *Storage) DropDB() error {
 	const op = "db.postgres.DropDB"
 	s.log.With(op)
@@ -134,7 +134,7 @@ func (s *Storage) DropDB() error {
 	return nil
 }
 
-// TestSelect
+// TestSelect - вывод в консоль всех таблиц
 func (s *Storage) TestSelect() error {
 	const op = "db.postgres.TestSelect"
 	s.log.With(op)
@@ -167,7 +167,7 @@ func (s *Storage) TestSelect() error {
 	return nil
 }
 
-// InsertUser
+// InsertUser - добавление в БД нового пользователя
 func (s *Storage) InsertUser(
 	ctx context.Context,
 	u *domain.User,
@@ -195,7 +195,7 @@ func (s *Storage) InsertUser(
 	return id, nil
 }
 
-// InsertPost
+// InsertPost - добавление в БД пост
 func (s *Storage) InsertPost(
 	ctx context.Context,
 	t *domain.Twit,
@@ -214,7 +214,7 @@ func (s *Storage) InsertPost(
 	return nil
 }
 
-// UserHashPass
+// UserHashPass - возвращает хэшированный пароль
 func (s *Storage) UserHashPass(
 	ctx context.Context,
 	email string,
@@ -244,7 +244,7 @@ func (s *Storage) UserHashPass(
 	return pass, nil
 }
 
-// NewFollow
+// NewFollow - добавление в БД подписки
 func (s *Storage) NewFollow(
 	ctx context.Context,
 	user *domain.User,
@@ -264,7 +264,7 @@ func (s *Storage) NewFollow(
 	return nil
 }
 
-// NewLike
+// NewLike - добавление в БД лайка
 func (s *Storage) NewLike(
 	ctx context.Context,
 	u *domain.User,
@@ -285,7 +285,7 @@ func (s *Storage) NewLike(
 	return nil
 }
 
-// UserLikes
+// UserLikes - выдача всех ID постов, где оставлены лайки от пользователя
 func (s *Storage) UserLikes(
 	ctx context.Context,
 	u *domain.User,
@@ -317,7 +317,7 @@ func (s *Storage) UserLikes(
 	return res, nil
 }
 
-// SearchUserID
+// SearchUserID - возвращает публичные данные пользователя по ID
 func (s *Storage) SearchUserID(
 	ctx context.Context,
 	id int,
@@ -347,7 +347,7 @@ func (s *Storage) SearchUserID(
 	return u, nil
 }
 
-// SearchUserNick
+// SearchUserNick - ищет пользователей по нику по вхождению
 func (s *Storage) SearchUserNick(
 	ctx context.Context,
 	nick string,
@@ -381,7 +381,7 @@ func (s *Storage) SearchUserNick(
 	return res, nil
 }
 
-// SearchUserTwits
+// SearchUserTwits - возвращает все посты пользователя
 func (s *Storage) SearchUserTwits(
 	ctx context.Context,
 	authorID int,
@@ -413,7 +413,7 @@ func (s *Storage) SearchUserTwits(
 	return twits, nil
 }
 
-// Unfollow
+// Unfollow - удаляет из БД подписку
 func (s *Storage) Unfollow(
 	ctx context.Context,
 	user *domain.User,
@@ -433,7 +433,7 @@ func (s *Storage) Unfollow(
 	return nil
 }
 
-// DeleteLike
+// DeleteLike - удаляет из БД лайк
 func (s *Storage) DeleteLike(
 	ctx context.Context,
 	u *domain.User,
@@ -453,7 +453,7 @@ func (s *Storage) DeleteLike(
 	return nil
 }
 
-// DeletePost
+// DeletePost - удаляет пост по ID
 func (s *Storage) DeletePost(
 	ctx context.Context,
 	t *domain.Twit) error {
@@ -472,7 +472,7 @@ func (s *Storage) DeletePost(
 	return nil
 }
 
-// PostsFromSubs
+// PostsFromSubs - возвращает все посты по ID
 func (s *Storage) PostsFromSubs(
 	ctx context.Context,
 	u *domain.User,
