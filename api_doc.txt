@@ -1,0 +1,48 @@
+
+
+/feed
+ - выдача json-ов формата
+{
+    "postId": 1,
+    "userId": 101,
+    "username": "adventurer1",
+    "text": "Just another day in paradise",
+    "date": "2022-01-15T10:30:00Z",
+    "isLiked": "true",
+    "likesCount": "100",
+    "isDisliked": "false",
+    "dislikesCount": "3"
+}
+
+/feed/post/{id}
+-GET: выдача определенного поста
+{
+    "postID": 1
+    "userId": 101,
+    "username": "adventurer1",
+    "text": "Just another day in paradise",
+    "date": "2022-01-15T10:30:00Z",
+    "isLiked": "true",
+    "likesCount": "100",
+    "isDisliked": "false",
+    "dislikesCount": "3"
+}
+
+/user/{id}
+- GET: страница юзера
+{
+    "userID": 101,
+    "profilePhoto": base64....,
+    "username": "adventurer1",
+    "createdDate": "2004-01-15T10:30:00Z"
+    "belongUser": "true" //если принадлежит пользователю
+}
+- опять выдача постов
+
+/user/{id}/delete/post/{id}
+- запрос удаления поста
+    здесь буду чекать сессию и все сверять
+
+/search/{username}
+- GET: поиск пользователей
+

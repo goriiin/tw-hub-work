@@ -9,4 +9,4 @@ services:
     ports:
       - "54320:5432"
     volumes:
-      - /home/dmitry/Desktop/twit-hub111/internal/db/data:/var/lib/postgresql/data
+      - /home/dmitry/Desktop/twit-hub111/server/internal/db/data:/var/lib/postgresql/data

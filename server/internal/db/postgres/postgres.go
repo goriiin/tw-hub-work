@@ -82,6 +82,7 @@ drop table if exists likes, twit, follows, tw_user
 func New(pathToDB string, l *slog.Logger) (*Storage, error) {
 	const op = "db.postgres.New"
 
+	l.Info(op)
 	cfg, err := config.ReadConfig(pathToDB)
 	if err != nil {
 		_ = fmt.Errorf("%s - config err: %w", op, err)
@@ -274,7 +275,7 @@ func (s *Storage) NewLike(
 	s.log.With(op)
 
 	_, err := s.db.Exec(ctx,
-		`insert into twit_hub.public.likes
+		`insert into twit_hub.public.ratings
              (user_id, post_id) 
              values ($1, $2)`,
 		u.Id, t.Id)
@@ -295,7 +296,7 @@ func (s *Storage) UserLikes(
 
 	rows, err := s.db.Query(ctx,
 		`select id 
-             from twit_hub.public.likes 
+             from twit_hub.public.ratings
              where user_id=$1`,
 		u.Id)
 	if err != nil {
@@ -443,7 +444,7 @@ func (s *Storage) DeleteLike(
 
 	_, err := s.db.Query(ctx,
 		`delete
-             from twit_hub.public.likes
+             from twit_hub.public.ratings
              where user_id=$1 and post_id=$2`,
 		u.Id, t.Id)
 	if err != nil {
