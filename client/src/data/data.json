@@ -1,0 +1,103 @@
+{
+	"posts": [
+		{
+			"postId": 2,
+			"userId": 102,
+			"username": "wanderer22",
+			"text": "Exploring new horizons",
+			"date": "2022-01-16T15:45:00Z",
+			"isLiked": "false",
+			"likesCount": "20",
+			"isDisliked": "true",
+			"dislikesCount": "5"
+		},
+		{
+			"postId": 3,
+			"userId": 103,
+			"username": "sunsetlover",
+			"text": "Enjoying the sunset",
+			"date": "2022-01-17T18:20:00Z",
+			"isLiked": "true",
+			"likesCount": "150",
+			"isDisliked": "false",
+			"dislikesCount": "2"
+		},
+		{
+			"postId": 4,
+			"userId": 104,
+			"username": "naturefanatic",
+			"text": "Feeling grateful for nature's beauty",
+			"date": "2022-01-18T12:05:00Z",
+			"isLiked": "true",
+			"likesCount": "80",
+			"isDisliked": "true",
+			"dislikesCount": "10"
+		},
+		{
+			"postId": 5,
+			"userId": 105,
+			"username": "waterfallchaser",
+			"text": "Chasing waterfalls",
+			"date": "2022-01-19T09:00:00Z",
+			"isLiked": "false",
+			"likesCount": "35",
+			"isDisliked": "false",
+			"dislikesCount": "1"
+		},
+		{
+			"postId": 6,
+			"userId": 106,
+			"username": "friendshipadventures",
+			"text": "Adventures with friends",
+			"date": "2022-01-20T17:30:00Z",
+			"isLiked": "true",
+			"likesCount": "200",
+			"isDisliked": "false",
+			"dislikesCount": "4"
+		},
+		{
+			"postId": 7,
+			"userId": 107,
+			"username": "coffeelover",
+			"text": "Morning coffee with a view",
+			"date": "2022-01-21T08:00:00Z",
+			"isLiked": "true",
+			"likesCount": "120",
+			"isDisliked": "false",
+			"dislikesCount": "8"
+		},
+		{
+			"postId": 8,
+			"userId": 104,
+			"username": "naturefanatic",
+			"text": "Exploring the woods",
+			"date": "2022-01-22T14:20:00Z",
+			"isLiked": "true",
+			"likesCount": "90",
+			"isDisliked": "false",
+			"dislikesCount": "2"
+		},
+		{
+			"postId": 9,
+			"userId": 108,
+			"username": "mountainpeace",
+			"text": "Finding peace in the mountains dasaf afas fasf asfasfasfasasf asfasf afafaf aadf af affsdfsf sdf sdf sdfsdf sddfsf sdf sdf s \n dasdasdas dasdasda a\ndasdas",
+			"date": "2022-01-23T06:45:00Z",
+			"isLiked": "false",
+			"likesCount": "60",
+			"isDisliked": "true",
+			"dislikesCount": "12"
+		},
+		{
+			"postId": 10,
+			"userId": 109,
+			"username": "citysunrise",
+			"text": "Sunrise over the city",
+			"date": "2022-01-24T20:10:00Z",
+			"isLiked": "true",
+			"likesCount": "180",
+			"isDisliked": "false",
+			"dislikesCount": "6"
+		}
+	]
+}
