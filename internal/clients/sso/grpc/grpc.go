@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
-	ssov1 "github.com/goriiin/protos/gen/go/sso"
+	ssov2 "github.com/goriiin/protos/gen/go/sso"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,7 +16,7 @@ import (
 )
 
 type Client struct {
-	api ssov1.AuthClient
+	api ssov2.AuthClient
 	log *slog.Logger
 }
 
@@ -50,7 +50,7 @@ func New(
 	}
 
 	return &Client{
-		api: ssov1.NewAuthClient(cc),
+		api: ssov2.NewAuthClient(cc),
 	}, nil
 }
 
@@ -58,10 +58,4 @@ func InterceptorLogger(l *slog.Logger) grpclog.Logger {
 	return grpclog.LoggerFunc(func(ctx context.Context, lvl grpclog.Level, msg string, fields ...any) {
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
 	})
-}
-
-func (c *Client) IsConnect(ctx context.Context, userID int64) (bool, error) {
-	const op = "grpc.IsConnect"
-
-	return true, nil
 }

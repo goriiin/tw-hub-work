@@ -2,18 +2,12 @@ package domain
 
 import "time"
 
-//id serial primary key,
-//nickname varchar(50) not null unique,
-//reg_data timestamp not null,
-//email    text        not null
-//constraint client_email_check
-//check (email ~~ '%@%.%'::text),
-//alive bool not null
-
 type User struct {
 	Id      int       `json:"id: int"`
-	Nick    string    `json:"nick"`
+	Nick    string    `json:"nick,omitempty"`
 	RegDate time.Time `json:"reg_data,omitempty"`
 	Email   string    `json:"email"`
 	Alive   bool      `json:"alive,omitempty"`
+	Pass    string    `json:"pass,omitempty"`
+	OldPass string    `json:"old_pass,omitempty"`
 }

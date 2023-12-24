@@ -30,13 +30,14 @@ func main() {
 	log.Info("starting...", slog.String("env", cfg.Env))
 	log.Debug("debug enabled")
 
-	storage, err := postgres.New(cfg.DbConfigPath)
+	storage, err := postgres.New(cfg.DbConfigPath, log)
 	fmt.Println(cfg.DbConfigPath)
 	if err != nil {
 		log.Error("db error", err)
 		os.Exit(1)
 	}
 
+	// TODO: в финальной версии убрать
 	//storage.DropDB()
 	//err = storage.SetDB()
 	//if err != nil {

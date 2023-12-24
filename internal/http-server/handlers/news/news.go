@@ -7,6 +7,8 @@ import (
 	"net/http"
 )
 
+// TODO: отслеживание лайков
+
 func News(w http.ResponseWriter, r *http.Request) {
 	temp := template.Must(template.ParseFiles("./web/static/news/newsFeed.html"))
 

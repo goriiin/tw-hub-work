@@ -5,7 +5,6 @@ import (
 	"google.golang.org/grpc"
 	"log/slog"
 	"net"
-	authgrpc "twit-hub111/internal/grpc/auth"
 )
 
 type App struct {
@@ -21,7 +20,8 @@ func New(
 ) *App {
 	gRPCServer := grpc.NewServer()
 
-	authgrpc.Register(gRPCServer)
+	// TODO auth
+	//authgrpc.Register(gRPCServer, )
 	return &App{
 		log:        log,
 		gRPCServer: gRPCServer,

@@ -9,7 +9,6 @@ import (
 	"time"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/domain"
-	"twit-hub111/internal/lib/jwt"
 	"twit-hub111/internal/lib/sl"
 )
 
@@ -39,7 +38,7 @@ func New(
 type UserStorage interface {
 	SaveUser(ctx context.Context, email string, passHash []byte) (uid int64, err error)
 	User(ctx context.Context, email string) (domain.User, error)
-	RegData(ctx context.Context, email string) (domain.SignUpUser, error)
+	RegData(ctx context.Context, email string) (domain.User, error)
 }
 
 // RegisterNewUser TODO: переделать логику - связать с таблицей
@@ -76,7 +75,6 @@ func (a *Auth) Login(
 	ctx context.Context,
 	email string,
 	password string, // пароль в чистом виде, аккуратней с логами!
-	appID int, // ID приложения, в котором логинится пользователь
 ) (string, error) {
 	const op = "Auth.Login"
 
@@ -111,16 +109,16 @@ func (a *Auth) Login(
 
 	log.Info("user logged in successfully")
 
-	app := domain.NewApp()
+	//app := domain.NewApp()
 	// TODO: поход в базу за юзером либо передача SignUpData
-	var user interface{}
 	// Создаём токен авторизации
-	token, err := jwt.NewToken(user, *app, a.tokenTTL)
+	//token, err := jwt.NewToken(user, *app, a.tokenTTL)
 	if err != nil {
 		a.log.Error("failed to generate token", sl.Err(err))
 
 		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return token, nil
+	// TODO: вернуть токен
+	return "", nil
 }
