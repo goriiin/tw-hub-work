@@ -26,8 +26,6 @@ type Storage struct {
 	log *slog.Logger
 }
 
-// TODO: удаление лайка
-
 const (
 	setDB = `
 create table if not exists tw_user
@@ -35,6 +33,7 @@ create table if not exists tw_user
     id serial primary key,
     nick varchar(50) not null unique,
     reg_date timestamp not null,
+    photo text,
     pass     text not null,
     email    text        not null
         constraint client_email_check
@@ -63,11 +62,12 @@ create table if not exists twit
     foreign key (author_id) references tw_user(id)
 );
 
-create table if not exists likes
+create table if not exists ratings
 (
     id serial primary key,
     user_id integer not null,
     post_id integer not null,
+    rating bool,
 
     foreign key (user_id) references tw_user(id),
     foreign key (post_id) references twit(id)
@@ -268,17 +268,17 @@ func (s *Storage) NewFollow(
 // NewLike - добавление в БД лайка
 func (s *Storage) NewLike(
 	ctx context.Context,
-	u *domain.User,
-	t *domain.Twit,
+	uID int,
+	tID int,
 ) error {
 	const op = "db.postgres.NewLike"
 	s.log.With(op)
 
 	_, err := s.db.Exec(ctx,
 		`insert into twit_hub.public.ratings
-             (user_id, post_id) 
-             values ($1, $2)`,
-		u.Id, t.Id)
+             (user_id, post_id, rating) 
+             values ($1, $2, true)`,
+		uID, tID)
 	if err != nil {
 		s.log.Error("Error insert twit", err)
 		return err
@@ -322,12 +322,12 @@ func (s *Storage) UserLikes(
 func (s *Storage) SearchUserID(
 	ctx context.Context,
 	id int,
-) (u *domain.User, err error) {
+) (u *domain.Author, err error) {
 	const op = "db.postgres.SearchUserID"
 	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
-		`select id, nick 
+		`select id, nick, email, reg_date, 
              from twit_hub.public.tw_user
              where id=$1`,
 		id)
@@ -437,8 +437,8 @@ func (s *Storage) Unfollow(
 // DeleteLike - удаляет из БД лайк
 func (s *Storage) DeleteLike(
 	ctx context.Context,
-	u *domain.User,
-	t *domain.Twit) error {
+	uID int,
+	tID int) error {
 	const op = "db.postgres.DeleteLike"
 	s.log.With(op)
 
@@ -446,7 +446,7 @@ func (s *Storage) DeleteLike(
 		`delete
              from twit_hub.public.ratings
              where user_id=$1 and post_id=$2`,
-		u.Id, t.Id)
+		uID, tID)
 	if err != nil {
 		s.log.With("query error", err)
 		return err
@@ -457,7 +457,7 @@ func (s *Storage) DeleteLike(
 // DeletePost - удаляет пост по ID
 func (s *Storage) DeletePost(
 	ctx context.Context,
-	t *domain.Twit) error {
+	tID int) error {
 	const op = "db.postgres.DeletePost"
 	s.log.With(op)
 
@@ -465,7 +465,7 @@ func (s *Storage) DeletePost(
 		`delete
              from twit_hub.public.twit
              where id=$1`,
-		t.Id)
+		tID)
 	if err != nil {
 		s.log.With("query error", err)
 		return err
@@ -505,4 +505,84 @@ func (s *Storage) PostsFromSubs(
 	}
 
 	return twits, nil
+}
+
+func (s *Storage) FeedTwits(
+	ctx context.Context,
+	userId int,
+) (posts []domain.Post, err error) {
+	const op = "db.postgres.FeedTwits"
+
+	rows, err := s.db.Query(ctx, `
+        SELECT twit.id AS postId, tw_user.id AS userId, tw_user.nick AS username, twit.text, twit.date,
+    EXISTS(SELECT * FROM ratings WHERE ratings.post_id = twit.id AND ratings.user_id = 1 AND ratings.rating = true) AS isLiked,
+    (SELECT COUNT(*) FROM ratings WHERE ratings.post_id = twit.id AND ratings.rating = true) AS likesCount,
+    EXISTS(SELECT * FROM ratings WHERE ratings.post_id = twit.id AND ratings.user_id = 1 AND ratings.rating = false) AS isDisliked,
+    (SELECT COUNT(*) FROM ratings WHERE ratings.post_id = twit.id AND ratings.rating = false) AS dislikesCount
+FROM twit
+JOIN tw_user ON twit.author_id = tw_user.id
+JOIN follows ON tw_user.id = follows.subscribe_to_id
+WHERE follows.user_id = $1
+ORDER BY twit.date DESC;
+
+    `, userId)
+	if err != nil {
+		s.log.Error("err", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post domain.Post
+		err = rows.Scan(&post.PostID, &post.UserID, &post.Username, &post.Text, &post.Date, &post.IsLiked, &post.LikesCount, &post.IsDisliked, &post.DislikesCount)
+		if err != nil {
+			s.log.Error("scan err", err)
+		}
+		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		s.log.Error("rows err", err)
+		return nil, err
+	}
+
+	return posts, nil
+}
+
+func (s *Storage) UserTwits(
+	ctx context.Context,
+	userId int,
+) (posts []domain.Post, err error) {
+	const op = "db.postgres.UserTwits"
+
+	rows, err := s.db.Query(ctx, `
+        SELECT twit.id AS postId, tw_user.id AS userId, tw_user.nick AS username, twit.text, twit.date,
+    EXISTS(SELECT * FROM ratings WHERE ratings.post_id = twit.id AND ratings.user_id = 1 AND ratings.rating = true) AS isLiked,
+    (SELECT COUNT(*) FROM ratings WHERE ratings.post_id = twit.id AND ratings.rating = true) AS likesCount,
+    EXISTS(SELECT * FROM ratings WHERE ratings.post_id = twit.id AND ratings.user_id = 1 AND ratings.rating = false) AS isDisliked,
+    (SELECT COUNT(*) FROM ratings WHERE ratings.post_id = twit.id AND ratings.rating = false) AS dislikesCount
+FROM twit
+JOIN tw_user ON twit.author_id = tw_user.id
+WHERE tw_user.id = $1
+ORDER BY twit.date DESC;
+    `, userId)
+	if err != nil {
+		s.log.Error("err", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var post domain.Post
+		err = rows.Scan(&post.PostID, &post.UserID, &post.Username, &post.Text, &post.Date, &post.IsLiked, &post.LikesCount, &post.IsDisliked, &post.DislikesCount)
+		if err != nil {
+			s.log.Error("scan err", err)
+		}
+		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		s.log.Error("rows err", err)
+		return nil, err
+	}
+
+	return posts, nil
 }

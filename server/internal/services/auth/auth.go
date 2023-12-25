@@ -12,6 +12,8 @@ import (
 	"twit-hub111/internal/lib/sl"
 )
 
+// TODO: согласование с БД
+
 var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 )

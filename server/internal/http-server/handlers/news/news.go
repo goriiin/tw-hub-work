@@ -10,7 +10,7 @@ import (
 // TODO: отслеживание лайков
 
 func News(w http.ResponseWriter, r *http.Request) {
-	temp := template.Must(template.ParseFiles("./web/static/news/newsFeed.html"))
+	temp := template.Must(template.ParseFiles("./server/web/static/news/newsFeed.html"))
 
 	fmt.Println("Rendering news template")
 	err := temp.ExecuteTemplate(w, "body", nil)

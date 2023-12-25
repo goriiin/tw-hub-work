@@ -1,7 +1,5 @@
-
-
 /feed
- - выдача json-ов формата
+ - POST: выдача всех постов - json-ов формата
 {
     "postId": 1,
     "userId": 101,
@@ -14,7 +12,7 @@
     "dislikesCount": "3"
 }
 
-/feed/post/{id}
+/feed/post{id}
 -GET: выдача определенного поста
 {
     "postID": 1
@@ -28,6 +26,30 @@
     "dislikesCount": "3"
 }
 
+/feed/post/rating/{id}
+-GET - лайк поста
+- rating true - лайк
+{
+    "postId": 1,
+    "userID": 1,
+    "rating": true
+}
+-GET - дизлайк поста
+- rating false - дизлайк
+{
+    "postId": 1,
+    "userID": 1,
+    "rating": false
+}
+
+/feed/post/rating/delete/{id}
+- /delete/{id}  - приходит true/false - убрать лайк/дизлайк
+{
+    "postId": 1,
+    "userID": 1,
+    "rating": true
+}
+
 /user/{id}
 - GET: страница юзера
 {
@@ -38,6 +60,8 @@
     "belongUser": "true" //если принадлежит пользователю
 }
 - опять выдача постов
+
+/user/follow/userId{id}&authorId{id}
 
 /user/{id}/delete/post/{id}
 - запрос удаления поста
