@@ -29,36 +29,38 @@ export default function Post({
 	dislikesCount,
 }: Props) {
 	return (
-		<div className='flex flex-col w-full max-w-[600px] bg-zinc-800 rounded-[0.3rem] p-2'>
-			<div className='mb-4'>
+		<div className='flex flex-col w-full max-w-[550px] bg-background border border-gray-200/10 rounded-[0.3rem] p-2'>
+			<div className='mb-6'>
 				<Link href={`/posts/${postId}`}>{text}</Link>
 			</div>
-			<div className='flex flex-row mb-1'>
-				<Link className='ml-0 mr-auto' href={`/user/${userId}`}>
-					@{username}
-				</Link>
-				<span className='ml-auto mr-0'>{formatDate(date)}</span>
-			</div>
-			<div className='flex flex-row gap-6'>
-				<div className='flex flex-row items-center gap-1'>
-					<div className={isLiked == 'true' ? 'text-green-700' : ''}>
-						<BiSolidLike />
-					</div>
-					<span>{likesCount}</span>
-				</div>
-				<div className='flex flex-row items-center gap-1'>
-					<div className={isDisliked == 'true' ? 'text-rose-700' : ''}>
-						<BiSolidDislike />
-					</div>
-					<span>{dislikesCount}</span>
-				</div>
-				<div className='flex flex-row items-center gap-1'>
-					<Link href={`/posts/${postId}`}>
-						<div className='flex flex-row items-center gap-1'>
-							<span>Comments</span>
-							<FaCommentAlt />
-						</div>
+			<div className='border-t border-t-gray-200/10'>
+				<div className='flex flex-row my-1'>
+					<Link className='ml-0 mr-auto' href={`/user/${userId}`}>
+						@{username}
 					</Link>
+					<span className='ml-auto mr-0'>{formatDate(date)}</span>
+				</div>
+				<div className='flex flex-row gap-6'>
+					<div className='flex flex-row items-center gap-1'>
+						<div className={isLiked == 'true' ? 'text-green-700' : ''}>
+							<BiSolidLike />
+						</div>
+						<span>{likesCount}</span>
+					</div>
+					<div className='flex flex-row items-center gap-1'>
+						<div className={isDisliked == 'true' ? 'text-rose-700' : ''}>
+							<BiSolidDislike />
+						</div>
+						<span>{dislikesCount}</span>
+					</div>
+					<div className='flex flex-row items-center gap-1'>
+						<Link href={`/posts/${postId}`}>
+							<div className='flex flex-row items-center gap-1'>
+								<span>Comments</span>
+								<FaCommentAlt />
+							</div>
+						</Link>
+					</div>
 				</div>
 			</div>
 		</div>

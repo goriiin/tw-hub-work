@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang='en'>
-			<body className='bg-stone-950 text-zinc-300'>
+			<body className='bg-background text-text'>
 				<div>
 					<Header />
 					<div className='flex flex-col'>
