@@ -3,7 +3,7 @@ import Post from './Post'
 
 export default function FeedPage() {
 	return (
-		<div className='flex flex-col justify-center items-center gap-y-2'>
+		<div className='flex flex-col justify-center items-center gap-y-2 mt-8'>
 			{data.posts.map((post) => (
 				<Post
 					key={post.postId}

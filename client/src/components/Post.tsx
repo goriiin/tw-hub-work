@@ -3,6 +3,7 @@
 import { formatDate } from '@/actions/index'
 import Link from 'next/link'
 import { BiSolidDislike, BiSolidLike } from 'react-icons/bi'
+import { FaCommentAlt } from 'react-icons/fa'
 
 type Props = {
 	postId: number
@@ -28,7 +29,7 @@ export default function Post({
 	dislikesCount,
 }: Props) {
 	return (
-		<div className='flex flex-col w-full max-w-[600px] bg-blue-200 rounded-xl p-2'>
+		<div className='flex flex-col w-full max-w-[600px] bg-zinc-800 rounded-[0.3rem] p-2'>
 			<div className='mb-4'>
 				<Link href={`/posts/${postId}`}>{text}</Link>
 			</div>
@@ -40,16 +41,24 @@ export default function Post({
 			</div>
 			<div className='flex flex-row gap-6'>
 				<div className='flex flex-row items-center gap-1'>
-					<div className={isLiked == 'true' ? 'text-green-600' : ''}>
+					<div className={isLiked == 'true' ? 'text-green-700' : ''}>
 						<BiSolidLike />
 					</div>
-					{likesCount}
+					<span>{likesCount}</span>
 				</div>
 				<div className='flex flex-row items-center gap-1'>
-					<div className={isDisliked == 'true' ? 'text-red-600' : ''}>
+					<div className={isDisliked == 'true' ? 'text-rose-700' : ''}>
 						<BiSolidDislike />
 					</div>
-					{dislikesCount}
+					<span>{dislikesCount}</span>
+				</div>
+				<div className='flex flex-row items-center gap-1'>
+					<Link href={`/posts/${postId}`}>
+						<div className='flex flex-row items-center gap-1'>
+							<span>Comments</span>
+							<FaCommentAlt />
+						</div>
+					</Link>
 				</div>
 			</div>
 		</div>
