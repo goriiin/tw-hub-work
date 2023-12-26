@@ -1,4 +1,4 @@
-/feed
+/news
  - POST: выдача всех постов - json-ов формата
 {
     "postId": 1,
@@ -12,7 +12,7 @@
     "dislikesCount": "3"
 }
 
-/feed/post{id}
+/news/post{id}
 -GET: выдача определенного поста
 {
     "postID": 1
@@ -26,12 +26,11 @@
     "dislikesCount": "3"
 }
 
-/feed/post/rating/{id}
+/news/post/rating/{id}
 -GET - лайк поста
 - rating true - лайк
 {
-    "postId": 1,
-    "userID": 1,
+    "postId": {id},
     "rating": true
 }
 -GET - дизлайк поста

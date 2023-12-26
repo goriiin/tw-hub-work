@@ -3,6 +3,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лента новостей</title>
 <!--    <link rel="stylesheet" href="style.css">-->
     <style>
@@ -65,6 +66,8 @@
             background: #3d3b39;
             padding: 10px;
             color: #eeeeee;
+            border-radius: 5px;
+            margin: 10px;
         }
 
         .news-item:last-child {
@@ -132,8 +135,7 @@
 
         .profile-menu a:hover {
             background-color: #555;
-            margin: 20px;
-            padding: 20px;
+            padding: 5px;
             border-radius: 5px;
         }
 
@@ -170,7 +172,8 @@
 </head>
 <body class="body-back">
 <div class="topnav">
-    <a href="#">Twit-hub</a>
+    <a href="http://localhost:8080/ru/news">Twit-hub</a>
+    <a href="http://localhost:8080/en/news">🇺🇸</a>
 </div>
 <div class="aaaaa">
     <div class="news-feed">
@@ -190,7 +193,6 @@
     <a href="http://localhost:8080/profile">Профиль</a>
     <a href="http://localhost:8080/news">Новости</a>
     <a href="http://localhost:8080/search">Поиск</a>
-    <a href="#">Смена языка</a>
 </div>
 </body>
 <script>
@@ -206,18 +208,18 @@
         const newsAuthor = document.createElement('a'); /* Добавили элемент для автора */
         newsAuthor.textContent = author;
         newsAuthor.id = authorId
-        newsAuthor.href = '/user/' + authorId;
+        newsAuthor.href = '/ru/user/' + authorId;
 
-        const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
-        likeButton.textContent = '❤️';
-        likeButton.className = 'heart-btn';
-        likeButton.onclick = 'changeColor()';
+        // const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+        // likeButton.textContent = '❤️';
+        // likeButton.className = 'heart-btn';
+        // likeButton.onclick = 'changeColor()';
 
         // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
         // commentButton.textContent = 'Комментарий';
         newsItem.appendChild(newsAuthor);
         newsItem.appendChild(newsDescription);
-        newsItem.appendChild(likeButton);
+        // newsItem.appendChild(likeButton);
 
         // newsItem.appendChild(commentButton);
 
@@ -249,6 +251,21 @@
             .then(data => console.log(data))
             .catch(error => console.error('Ошибка:', error));
     }
+    function renderNews() {
+        fetch('/en/news')
+            .then(response => response.json())
+            .then(data => {
+                for (let i = 0; i < data.length; i++) {
+                    const news = data[i];
+                    addNews(news.userId, news.username, news.text);
+                    console.log(news.userId, news.username, news.text)
+                }
+            })
+            .catch(error => console.error(error));
+    }
+
+    // Пример использования
+    renderNews();
 </script>
 </html>
 {{ end }}

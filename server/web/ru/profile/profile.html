@@ -220,9 +220,10 @@
         </div>
     </div>
 </header>
-    <div class="topnav">
-        <a href="#">Twit-hub</a>
-    </div>
+<div class="topnav">
+    <a href="http://localhost:8080/ru/news">Twit-hub</a>
+    <a href="http://localhost:8080/en/news">🇺🇸</a>
+</div>
     <div class="aaaaa">
         <div class="news-feed">
             <div class="news-list">
@@ -235,17 +236,15 @@
     <a href="http://localhost:8080/profile">Профиль</a>
     <a href="http://localhost:8080/news">Новости</a>
     <a href="http://localhost:8080/search">Поиск</a>
-    <a href="#">Смена языка</a>
 </div>
 </body>
-
     <script>
         const newsList = document.querySelector('.news-list');
 
-        function addNews(newsID, author, description, authorId) {
+        function addNews(authorId, author, description) {
             const newsItem = document.createElement('div');
             newsItem.className = 'news-item';
-            newsItem.id = newsID
+            // newsItem.id = newsID
 
             const newsDescription = document.createElement('p');
             newsDescription.textContent = description;
@@ -255,10 +254,10 @@
             newsAuthor.id = authorId
             newsAuthor.href = '/user/' + authorId;
 
-            const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
-            likeButton.textContent = '❤️';
-            likeButton.className = 'heart-btn';
-            likeButton.onclick = 'changeColor()';
+            // const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+            // likeButton.textContent = '❤️';
+            // likeButton.className = 'heart-btn';
+            // likeButton.onclick = 'changeColor()';
 
             // const trashButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
             // trashButton.textContent = '🗑️';
@@ -269,7 +268,7 @@
             // commentButton.textContent = 'Комментарий';
             newsItem.appendChild(newsAuthor);
             newsItem.appendChild(newsDescription);
-            newsItem.appendChild(likeButton);
+            // newsItem.appendChild(likeButton);
             // newsItem.appendChild(trashButton);
 
             // newsItem.appendChild(commentButton);
@@ -278,18 +277,18 @@
         }
 
         // Добавляем случайные новости для тестирования
-        // for (let i = 0; i < 20; i++) {
-        //     const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
-        //     const description = `Краткое описание новости ${i + 1}`;
-        //     addNews(author, description, i);
-        // }
+        for (let i = 0; i < 20; i++) {
+            const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
+            const description = `Краткое описание новости ${i + 1}`;
+            addNews(i, author, description);
+        }
 
         // document.getElementById('photo-upload').addEventListener('change', function() {
         //     var file = this.files[0];
         //     var reader = new FileReader();
         //     reader.onload = function(e) {
         //         var imageBase64 = e.target.result;
-        //         console.log('Image converted to base64:', imageBase64);
+        //         console.login('Image converted to base64:', imageBase64);
         //     };
         //     reader.readAsDataURL(file);
         // });
@@ -330,7 +329,7 @@
         // }
         //
         // function show_result(data){
-        //     console.log(data);
+        //     console.login(data);
         //     var result = document.getElementById("result");
         //     var frm = document.forms["calc_form"];
         //     result.innerHTML = "<h1>Вход: " + frm.n.value + "</h1>";

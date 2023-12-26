@@ -14,6 +14,8 @@ import (
 	"time"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
+	"twit-hub111/internal/http-server/handlers/auth/login"
+	"twit-hub111/internal/http-server/handlers/auth/reg"
 	"twit-hub111/internal/http-server/handlers/news"
 	"twit-hub111/internal/http-server/handlers/profile"
 	"twit-hub111/internal/http-server/handlers/search"
@@ -57,12 +59,20 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Get("/ru/login", login.New(log, storage, cacheService).Login)
+	router.Get("/ru/reg", reg.New(log, storage, cacheService).Reg)
 	router.Get("/ru/news", news.New(log, storage, cacheService).News)
-	router.Get("/news", news.New(log, storage, cacheService).News)
+	router.Get("/ru/search/{nickname}", search.New(log, storage, cacheService).Search)
+	router.Get("/ru/user/{id}", profile.New(log, storage, cacheService).Users)
+
+	router.Get("/en/login", login.New(log, storage, cacheService).Login)
+	router.Get("/en/reg", reg.New(log, storage, cacheService).Reg)
+	router.Get("/en/news", news.New(log, storage, cacheService).News)
+	router.Get("/en/search/{nickname}", search.New(log, storage, cacheService).Search)
+	router.Get("/en/user/{id}", profile.New(log, storage, cacheService).Users)
+
 	router.Post("/news", news.New(log, storage, cacheService).NewPost)
-	router.Get("/ru/search", search.Search)
-	router.Get("/search", search.Search)
-	router.Get("/profile", profile.Users)
+
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	done := make(chan os.Signal, 1)

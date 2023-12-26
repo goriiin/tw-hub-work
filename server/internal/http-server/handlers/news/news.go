@@ -1,6 +1,7 @@
 package news
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/lib/cookies"
+	"twit-hub111/internal/services/twits"
 )
 
 // TODO: отслеживание лайков
@@ -32,10 +34,11 @@ func New(
 
 func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
+	fmt.Println(r.URL.Path[0:3])
 	cookie, err := r.Cookie("token")
 	flag, err := n.c.IsCookieValid(cookie)
 	if err != nil {
-		http.Redirect(w, r, r.URL.Path[0:4]+"/news", http.StatusInternalServerError)
+		http.Redirect(w, r, r.URL.Path[0:4]+"/wtf", http.StatusInternalServerError)
 	}
 
 	if !flag {
@@ -44,7 +47,9 @@ func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path[0:3] == "/ru" {
 		temp = template.Must(template.ParseFiles("server/web/ru/news/newsFeed.html"))
-	} else {
+	}
+
+	if r.URL.Path[0:3] == "/en" {
 		temp = template.Must(template.ParseFiles("server/web/en/news/newsFeed.html"))
 	}
 
@@ -57,12 +62,13 @@ func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(userId)
 	fmt.Println("Rendering news template")
 
-	//info, err := twits.ShowFeed(context.Background(), n.s, userId)
+	info, err := twits.ShowFeed(context.Background(), n.s, userId)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, err.Error())
 	}
-	err = temp.ExecuteTemplate(w, "body", nil)
-	//err = temp.ExecuteTemplate(w, "body", info)
+	//err := temp.ExecuteTemplate(w, "body", nil)
+
+	err = temp.ExecuteTemplate(w, "body", info)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, err.Error())
 	}
@@ -73,9 +79,8 @@ func (n *NewsService) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	cookie, err := r.Cookie("token")
 	tok := cookie.Value
-
+	fmt.Println(tok)
 	userId, err := n.c.GetUserIdFromToken(tok)
-	fmt.Println(userId)
 	if err != nil {
 
 	}

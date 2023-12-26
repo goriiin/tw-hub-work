@@ -51,7 +51,8 @@ func UserInfo(
 	return author, nil
 }
 
-func InfoToJSON(author *domain.Author,
+func InfoToJSON(
+	author *domain.Author,
 	posts []domain.Post,
 ) (jsonBytes []byte, err error) {
 	info := domain.UserProfile{
