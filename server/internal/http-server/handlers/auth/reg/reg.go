@@ -1,8 +1,10 @@
 package reg
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log/slog"
 	"net/http"
 	"twit-hub111/internal/db/postgres"
@@ -27,16 +29,40 @@ func New(
 	}
 }
 
-func Users(w http.ResponseWriter, r *http.Request) {
-	temp := template.Must(template.ParseFiles("./server/web/ru/profile.html"))
+func (reg *RegisterService) Reg(w http.ResponseWriter, r *http.Request) {
+	var temp *template.Template
+	if r.URL.Path[0:3] == "/ru" {
+		temp = template.Must(template.ParseFiles("server/web/ru/sign_up/singup.html"))
+	}
 
-	fmt.Println("Rendering news template")
+	if r.URL.Path[0:3] == "/en" {
+		temp = template.Must(template.ParseFiles("server/web/en/sign_up/singup.html"))
+	}
+
 	err := temp.ExecuteTemplate(w, "body", nil)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, err.Error())
 	}
 }
 
-func (reg *RegisterService) Reg(w http.ResponseWriter, r *http.Request) {
+type regData struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
+func (reg *RegisterService) RegData(w http.ResponseWriter, r *http.Request) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+
+	}
+	var rrr regData
+	json.Unmarshal(body, &rrr)
+
+	fmt.Println(rrr)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
 }

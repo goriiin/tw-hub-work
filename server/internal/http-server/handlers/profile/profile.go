@@ -31,7 +31,7 @@ func New(
 
 func (u *UserService) Users(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
-	fmt.Println(r.URL.Path[0:3])
+
 	cookie, err := r.Cookie("token")
 	flag, err := u.c.IsCookieValid(cookie)
 	if err != nil {

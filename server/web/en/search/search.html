@@ -4,81 +4,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль</title>
+    <title>Поиск пользователей</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+
+        input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
         }
-        header {
-            margin-top: 100px;
-            background-color: rgb(61, 59, 57);
+        input[type=submit] {
+            width: 100%;
+            background-color: #400179;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #f2f2f2;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        input[type=submit]:hover {
+            background-color: #13003a;
+        }
+
+        form {
+            margin-left: 200px;
+            margin-right: 100px;
             padding: 20px;
+            border: 1px solid #400179;
+            border-radius: 5px;
+            background-color: #3d3b39;
+            margin-top: 80px;
+            color: #f2f2f2;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        /* Стили для результата поиска */
+        .result {
+            margin-left: 200px;
+            margin-right: 100px;
+            padding: 20px;
+            border: 1px solid #400179;
+            background-color: #3d3b39;
+            border-radius: 5px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            border-radius: 10px;
-            margin-left: 200px;
-            margin-right: 60px;
-            color: #d7d7d7;
         }
-
-        .topnav {
-            z-index: 1001;
-            width: 100%;
-            background-color: #333;
-            overflow: hidden;
-            height: 60px;
-            position: fixed;
-            top: 0;
-            left: 0;
-        }
-
-        .topnav a {
+        .result img {
             float: left;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
+            margin-right: 20px;
+            border-radius: 50%;
+            width: 70px;
+            vertical-align: middle;
+        }
+        .result a {
+            font-size: 24px;
+            font-weight: bold;
             text-decoration: none;
-            font-size: 35px;
+            color: #333;
         }
 
-        .body-back{
-            background: rgb(20, 20, 20);
+        .result a {
+            text-align: center;
+            color: #f2f2f2;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
         }
-
-        .news-item h2 {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .news-item p {
-            margin: 5px 0;
-            font-size: 14px;
-            border-radius: 10px;
-        }
-
-        .form-container textarea {
-            resize: none;
-            height: 150px;
-            border-radius: 10px;
-            overflow: auto;
-            border-width: 0;
-            display: inline-block;
-            width: 100% !important;
-            box-sizing: border-box;
-            padding: 10px;
-            margin-bottom: 10px;
-            position: relative;
-        }
-
-        .form-container button {
-            background-color: #141414;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
         .profile-menu {
             position: fixed;
             top: 60px;
@@ -102,108 +97,119 @@
             background-color: #555;
         }
 
-        .form-container button:hover {
-            background-color: #141414;
-        }
-
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+
+        .topnav {
+            z-index: 1001;
+            width: 100%;
+            background-color: #333;
+            overflow: hidden;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 35px;
+        }
+        .body-back{
+            background: rgb(20, 20, 20);
+        }
     </style>
 </head>
-
 <body class="body-back">
-    <div class="topnav">
-        <a href="#">Twit-hub</a>
-    </div>
-    <div class="profile-menu">
-        <a href="http://localhost:8080/profile">Профиль</a>
-        <a href="http://localhost:8080/news">Новости</a>
-        <a href="#">Поиск автора</a>
-        <a href="#">Выход</a>
-    </div>
-</body>
-
+<div class="topnav">
+    <a href="http://localhost:8080/en/news">Twit-hub</a>
+    <a href="http://localhost:8080/ru/news">🇷🇺</a>
+</div>
+<div class="profile-menu">
+    <a href="http://localhost:8080/en/profile">Profile</a>
+    <a href="http://localhost:8080/en/news">Events</a>
+    <a href="http://localhost:8080/en/search">Search</a>
+</div>
+<form>
+    <label for="search">Поиск пользователей:</label>
+    <input type="text" id="search" name="search" placeholder="Введите имя пользователя...">
+    <input type="submit" value="Найти">
+</form>
+<div id="results">
+</div>
 <script>
-    const newsList = document.querySelector('.news-list');
+    // Обработчик отправки формы
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        // Получаем значение поля ввода
+        var search = document.querySelector('#search').value;
+        // Отправляем запрос на сервер
+        fetch('/search/' + search)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                // Очищаем результаты предыдущего поиска
+                document.querySelector('#results').innerHTML = '';
+                // Выводим результаты поиска
+                data.forEach(function(user) {
+                    var result = document.createElement('div');
+                    result.classList.add('result');
+                    var img = document.createElement('img');
+                    img.src = user.profilePhoto;
+                    result.appendChild(img);
+                    var a = document.createElement('a');
+                    a.href = '/user/' + user.userID;
+                    a.textContent = user.username;
+                    result.appendChild(a);
+                    document.querySelector('#results').appendChild(result);
+                });
+            });
+    });
 
-    function addNews(author, description) {
-        const newsItem = document.createElement('div');
-        newsItem.className = 'news-item';
+    // Массив с данными для вывода
+    // var data = [
+    //     { userID: 101, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer1" },
+    //     { userID: 102, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer2" },
+    //     { userID: 103, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer3" },
+    //     { userID: 104, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer4" },
+    //     { userID: 105, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer5" },
+    //     { userID: 106, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer6" },
+    //     { userID: 107, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer7" },
+    //     { userID: 108, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer8" },
+    //     { userID: 109, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer9" },
+    //     { userID: 110, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer10" }
+    // ];
 
-        const newsAuthor = document.createElement('p');
-        newsAuthor.textContent = 'Автор: ' + author;
-
-
-        newsItem.appendChild(newsDescription);
-        newsItem.appendChild(newsAuthor);
-
-        newsList.appendChild(newsItem);
-    }
-
-    // Добавляем случайные новости для тестирования
-    for (let i = 0; i < 20; i++) {
-        const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
-        const description = `Краткое описание новости ${i + 1}`;
-        addNews(author, description);
-    }
-
-    function addOwnNews() {
-        const text = document.getElementById('own-news').value;
-
-        fetch('/news', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ text: text })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Ошибка:', error));
-    }
-
-    // arm_url = location.protocol + "//" + location.host + "/armstrong/calculate.json";
-    // function send_query(){
-    //     var frm = document.forms.calc_form;
-    //     var param_str = "?n=" + encodeURIComponent(frm.n.value);
-    //     var http_request = new XMLHttpRequest();
-    //     http_request.open("GET", arm_url + param_str, true);
-    //     http_request.onreadystatechange = function (){
-    //         var done = 4, ok = 200;
-    //         if (http_request.readyState == done && http_request.status == ok){
-    //             my_JSON_object = JSON.parse(http_request.responseText);
-    //             show_result(my_JSON_object);
-    //         }
-    //         else {
-    //             show_bad_request();
-    //         }
-    //     };
-    //     http_request.send(null);
-    //     return false;
+    // Функция, которая выводит данные на экран
+    // function displayData() {
+    //     // Очищаем результаты предыдущего поиска
+    //     document.querySelector('#results').innerHTML = '';
+    //     // Выводим результаты поиска
+    //     data.forEach(function(user) {
+    //         var result = document.createElement('div');
+    //         result.classList.add('result');
+    //         var img = document.createElement('img');
+    //         img.src = user.profilePhoto;
+    //         result.appendChild(img);
+    //         var a = document.createElement('a');
+    //         a.href = '/user/' + user.userID;
+    //         a.textContent = user.username;
+    //         result.appendChild(a);
+    //         document.querySelector('#results').appendChild(result);
+    //     });
     // }
-    //
-    // function show_result(data){
-    //     console.login(data);
-    //     var result = document.getElementById("result");
-    //     var frm = document.forms["calc_form"];
-    //     result.innerHTML = "<h1>Вход: " + frm.n.value + "</h1>";
-    //
-    //     var tableHTML = '<table>'; // Start of the table
-    //     tableHTML += '<tr><th>Index</th><th>Value</th></tr>'; // Table header
-    //
-    //     for (let i = 0; i < data.value.length; i++){
-    //         tableHTML += '<tr><td>' + (i+1) + '' + data.value[i] + '</td></tr>';
-    //     }
-    //
-    //     tableHTML += '</table>'; // End of the table
-    //     result.innerHTML += tableHTML;
-    // }
-    //
-    // function show_bad_request(){
-    //     var result  = document.getElementById("result")
-    //     result.innerHTML = "<hr/>Bad<hr/>"
-    // }
+
+    // Обработчик события загрузки страницы
+    window.addEventListener("load", function() {
+        // Выводим данные на экран
+        displayData();
+    });
 </script>
 </body>
 </html>

@@ -62,14 +62,22 @@ func main() {
 	router.Get("/ru/login", login.New(log, storage, cacheService).Login)
 	router.Get("/ru/reg", reg.New(log, storage, cacheService).Reg)
 	router.Get("/ru/news", news.New(log, storage, cacheService).News)
-	router.Get("/ru/search/{nickname}", search.New(log, storage, cacheService).Search)
+	router.Get("/ru/search", search.New(log, storage, cacheService).Search)
+	router.Get("/ru/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
 	router.Get("/ru/user/{id}", profile.New(log, storage, cacheService).Users)
 
 	router.Get("/en/login", login.New(log, storage, cacheService).Login)
 	router.Get("/en/reg", reg.New(log, storage, cacheService).Reg)
 	router.Get("/en/news", news.New(log, storage, cacheService).News)
-	router.Get("/en/search/{nickname}", search.New(log, storage, cacheService).Search)
+	router.Get("/en/search", search.New(log, storage, cacheService).Search)
+	router.Get("/en/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
 	router.Get("/en/user/{id}", profile.New(log, storage, cacheService).Users)
+
+	router.Post("/en/login", login.New(log, storage, cacheService).LogData)
+	router.Post("/ru/login", login.New(log, storage, cacheService).LogData)
+
+	router.Post("/en/reg", reg.New(log, storage, cacheService).RegData)
+	router.Post("/ru/reg", reg.New(log, storage, cacheService).RegData)
 
 	router.Post("/news", news.New(log, storage, cacheService).NewPost)
 
