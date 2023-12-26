@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/lib/pq"
-	"log/slog"
 	"os"
 	"strings"
 	"twit-hub111/internal/config"
@@ -14,16 +13,12 @@ import (
 )
 
 var (
-	ErrUserExists         = errors.New("user already exists")
-	ErrUserNotValid       = errors.New("password or nickname not valid")
-	ErrUserNotFound       = errors.New("user not found")
 	ErrDuplicateUserName  = errors.New("duplicate username")
 	ErrDuplicateUserEmail = errors.New("duplicate email")
 )
 
 type Storage struct {
-	db  *pgxpool.Pool
-	log *slog.Logger
+	db *pgxpool.Pool
 }
 
 const (
@@ -74,24 +69,23 @@ create table if not exists ratings
 );
 `
 	dropAll = `
-drop table if exists likes, twit, follows, tw_user
+drop table if exists ratings, follows, twit,  tw_user
 `
 )
 
 // New -
-func New(pathToDB string, l *slog.Logger) (*Storage, error) {
+func New(pathToDB string) (*Storage, error) {
 	const op = "db.postgres.New"
 
-	l.Info(op)
 	cfg, err := config.ReadConfig(pathToDB)
 	if err != nil {
-		_ = fmt.Errorf("%s - config err: %w", op, err)
+		fmt.Println(fmt.Errorf("%s - config err: %w\n", op, err))
 		os.Exit(1)
 	}
 
 	poolConfig, err := config.NewPoolConfig(cfg)
 	if err != nil {
-		_ = fmt.Errorf("%s - Pool config error: %w", op, err)
+		fmt.Println(fmt.Errorf("%s - config err: %w\n", op, err))
 		os.Exit(1)
 	}
 
@@ -99,23 +93,21 @@ func New(pathToDB string, l *slog.Logger) (*Storage, error) {
 
 	conn, err := config.NewConnection(poolConfig)
 	if err != nil {
-		_ = fmt.Errorf("%s: %w", op, err)
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return &Storage{
-		db:  conn,
-		log: l,
+		db: conn,
 	}, nil
 }
 
 // SetDB - создание таблиц
 func (s *Storage) SetDB() error {
 	const op = "db.postgres.SetDB"
-	s.log.With(op)
+
 	_, err := s.db.Exec(context.Background(), setDB)
 	if err != nil {
-		s.log.Error("query error: ", err)
-		return err
+		return fmt.Errorf("%s - config err: %w", op, err)
 	}
 
 	return nil
@@ -124,12 +116,10 @@ func (s *Storage) SetDB() error {
 // DropDB - удаление всех таблиц
 func (s *Storage) DropDB() error {
 	const op = "db.postgres.DropDB"
-	s.log.With(op)
 
 	_, err := s.db.Exec(context.Background(), dropAll)
 	if err != nil {
-		s.log.Error("query error", err)
-		return err
+		return fmt.Errorf("%s - config err: %w", op, err)
 	}
 
 	return nil
@@ -138,15 +128,14 @@ func (s *Storage) DropDB() error {
 // TestSelect - вывод в консоль всех таблиц
 func (s *Storage) TestSelect() error {
 	const op = "db.postgres.TestSelect"
-	s.log.With(op)
+
 	rows, err := s.db.Query(context.Background(),
 		`SELECT table_name
              FROM information_schema.tables 
              WHERE table_schema = 'public'`)
 
 	if err != nil {
-		s.log.With("query error", err)
-		return err
+		return fmt.Errorf("%s - config err: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -154,16 +143,14 @@ func (s *Storage) TestSelect() error {
 		var tableName string
 		err = rows.Scan(&tableName)
 		if err != nil {
-			s.log.Error("Read error")
-			return err
+			return fmt.Errorf("%s - config err: %w", op, err)
 		}
-		s.log.Info("Created table name", tableName)
+		fmt.Printf("Created table name: %s", tableName)
 	}
 
 	// проверяем ошибку после обработки результатов
 	if err = rows.Err(); err != nil {
-		s.log.Error("Rows error", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -202,15 +189,13 @@ func (s *Storage) InsertPost(
 	t *domain.Twit,
 ) error {
 	const op = "db.postgres.InsertPost"
-	s.log.With(op)
 
 	_, err := s.db.Exec(ctx,
 		`insert into twit_hub.public.twit(text, photo, author_id, date) 
             values ($1, $2, $3, now())`,
 		t.Text, t.Photo, t.AuthorId)
 	if err != nil {
-		s.log.Error("Error insert twit", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -221,7 +206,6 @@ func (s *Storage) UserHashPass(
 	email string,
 ) (pass string, err error) {
 	const op = "db.postgres.CheckValidUser"
-	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
 		`select pass 
@@ -229,16 +213,14 @@ func (s *Storage) UserHashPass(
              where email=$1`,
 		email)
 	if err != nil {
-		s.log.With("query error", err)
-		return "", err
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		err = rows.Scan(&pass)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return "", err
+			return "", fmt.Errorf("%s: %w", op, err)
 		}
 	}
 
@@ -252,15 +234,13 @@ func (s *Storage) NewFollow(
 	author *domain.User,
 ) error {
 	const op = "db.postgres.NewFollow"
-	s.log.With(op)
 
 	_, err := s.db.Exec(ctx,
 		`insert into twit_hub.public.follows(user_id, subscribe_to_id) 
             values ($1, $2)`,
 		user.Id, author.Id)
 	if err != nil {
-		s.log.Error("Error insert follow", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -272,7 +252,6 @@ func (s *Storage) NewLike(
 	tID int,
 ) error {
 	const op = "db.postgres.NewLike"
-	s.log.With(op)
 
 	_, err := s.db.Exec(ctx,
 		`insert into twit_hub.public.ratings
@@ -280,8 +259,7 @@ func (s *Storage) NewLike(
              values ($1, $2, true)`,
 		uID, tID)
 	if err != nil {
-		s.log.Error("Error insert twit", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -292,7 +270,6 @@ func (s *Storage) UserLikes(
 	u *domain.User,
 ) (res []int, err error) {
 	const op = "db.postgres.GetLikes"
-	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
 		`select id 
@@ -300,8 +277,7 @@ func (s *Storage) UserLikes(
              where user_id=$1`,
 		u.Id)
 	if err != nil {
-		s.log.With("query error", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -309,8 +285,7 @@ func (s *Storage) UserLikes(
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return nil, err
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		res = append(res, id)
 	}
@@ -324,24 +299,21 @@ func (s *Storage) SearchUserID(
 	id int,
 ) (u *domain.Author, err error) {
 	const op = "db.postgres.SearchUserID"
-	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
-		`select id, nick, email, reg_date, 
+		`select id, nick, email, reg_date, photo
              from twit_hub.public.tw_user
              where id=$1`,
 		id)
 	if err != nil {
-		s.log.With("query error", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&u.Id, &u.Nick)
+		err = rows.Scan(&u.Id, &u.Nick, &u.Email, &u.RegDate, &u.Photo)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return nil, err
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 	}
 
@@ -354,7 +326,6 @@ func (s *Storage) SearchUserNick(
 	nick string,
 ) (res []int, err error) {
 	const op = "db.postgres.SearchUserNick"
-	s.log.With(op)
 
 	nick = strings.ToLower(nick)
 
@@ -364,8 +335,7 @@ func (s *Storage) SearchUserNick(
                             where lower(nick) like '%' || $1 || '%'
                             order by length(nick)`, nick)
 	if err != nil {
-		s.log.With("query error", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -373,8 +343,7 @@ func (s *Storage) SearchUserNick(
 		var id int
 		err = rows.Scan(&id)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return nil, err
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		res = append(res, id)
 	}
@@ -388,7 +357,6 @@ func (s *Storage) SearchUserTwits(
 	authorID int,
 ) (twits []domain.Twit, err error) {
 	const op = "db.postgres.SearchUserTwits"
-	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
 		`select Id, author_id, text, photo, date
@@ -396,8 +364,7 @@ func (s *Storage) SearchUserTwits(
              where author_id=$1`,
 		authorID)
 	if err != nil {
-		s.log.With("query error", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -405,8 +372,7 @@ func (s *Storage) SearchUserTwits(
 		var twit domain.Twit
 		err = rows.Scan(&twit.Id, &twit.AuthorId, &twit.Text, &twit.Photo, &twit.Date)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return nil, err
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		twits = append(twits, twit)
 	}
@@ -420,7 +386,6 @@ func (s *Storage) Unfollow(
 	user *domain.User,
 	author *domain.User) error {
 	const op = "db.postgres.Unfollow"
-	s.log.With(op)
 
 	_, err := s.db.Query(ctx,
 		`delete
@@ -428,8 +393,7 @@ func (s *Storage) Unfollow(
              where user_id=$1 and subscribe_to_id=$2`,
 		user.Id, author.Id)
 	if err != nil {
-		s.log.With("query error", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -440,7 +404,6 @@ func (s *Storage) DeleteLike(
 	uID int,
 	tID int) error {
 	const op = "db.postgres.DeleteLike"
-	s.log.With(op)
 
 	_, err := s.db.Query(ctx,
 		`delete
@@ -448,8 +411,7 @@ func (s *Storage) DeleteLike(
              where user_id=$1 and post_id=$2`,
 		uID, tID)
 	if err != nil {
-		s.log.With("query error", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -459,7 +421,6 @@ func (s *Storage) DeletePost(
 	ctx context.Context,
 	tID int) error {
 	const op = "db.postgres.DeletePost"
-	s.log.With(op)
 
 	_, err := s.db.Query(ctx,
 		`delete
@@ -467,8 +428,7 @@ func (s *Storage) DeletePost(
              where id=$1`,
 		tID)
 	if err != nil {
-		s.log.With("query error", err)
-		return err
+		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
 }
@@ -479,7 +439,6 @@ func (s *Storage) PostsFromSubs(
 	u *domain.User,
 ) (twits []domain.Twit, err error) {
 	const op = "db.postgres.PostsFromSubs"
-	s.log.With(op)
 
 	rows, err := s.db.Query(ctx,
 		`select Id, author_id, text, photo, date
@@ -489,8 +448,7 @@ func (s *Storage) PostsFromSubs(
                                  where user_id=&1)`,
 		u.Id)
 	if err != nil {
-		s.log.With("query error", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -498,8 +456,7 @@ func (s *Storage) PostsFromSubs(
 		var twit domain.Twit
 		err = rows.Scan(&twit.Id, &twit.AuthorId, &twit.Text, &twit.Photo, &twit.Date)
 		if err != nil {
-			s.log.With("Error read rows", err)
-			return nil, err
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		twits = append(twits, twit)
 	}
@@ -527,8 +484,7 @@ ORDER BY twit.date DESC;
 
     `, userId)
 	if err != nil {
-		s.log.Error("err", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -536,13 +492,12 @@ ORDER BY twit.date DESC;
 		var post domain.Post
 		err = rows.Scan(&post.PostID, &post.UserID, &post.Username, &post.Text, &post.Date, &post.IsLiked, &post.LikesCount, &post.IsDisliked, &post.DislikesCount)
 		if err != nil {
-			s.log.Error("scan err", err)
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {
-		s.log.Error("rows err", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return posts, nil
@@ -566,8 +521,7 @@ WHERE tw_user.id = $1
 ORDER BY twit.date DESC;
     `, userId)
 	if err != nil {
-		s.log.Error("err", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
@@ -575,13 +529,12 @@ ORDER BY twit.date DESC;
 		var post domain.Post
 		err = rows.Scan(&post.PostID, &post.UserID, &post.Username, &post.Text, &post.Date, &post.IsLiked, &post.LikesCount, &post.IsDisliked, &post.DislikesCount)
 		if err != nil {
-			s.log.Error("scan err", err)
+			return nil, fmt.Errorf("%s: %w", op, err)
 		}
 		posts = append(posts, post)
 	}
 	if err = rows.Err(); err != nil {
-		s.log.Error("rows err", err)
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	return posts, nil

@@ -2,8 +2,8 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	ssov2 "github.com/goriiin/protos/gen/go/sso"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,6 +37,10 @@ func Register(gRPC *grpc.Server, auth Auth) {
 func (s *serverAPI) Login(
 	ctx context.Context, req *ssov2.LoginRequest,
 ) (*ssov2.LoginResponse, error) {
+	const op = "grpc.gRPCauth.server.Login"
+
+	fmt.Println(op)
+
 	if _, err := mail.ParseAddress(req.GetEmail()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, "email not valid")
 	}
@@ -57,6 +61,9 @@ func (s *serverAPI) Login(
 }
 
 func (s *serverAPI) Register(ctx context.Context, req *ssov2.RegisterRequest) (*ssov2.RegisterResponse, error) {
+	const op = "grpc.gRPCauth.server.Register"
+	fmt.Println(op)
+
 	if _, err := mail.ParseAddress(req.GetEmail()); err != nil {
 		return nil, status.Error(codes.InvalidArgument, "email not valid")
 	}

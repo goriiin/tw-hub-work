@@ -1,4 +1,4 @@
-package user
+package profile
 
 import (
 	"context"
@@ -20,7 +20,7 @@ func New(log *slog.Logger, user User) http.HandlerFunc {
 }
 
 func Users(w http.ResponseWriter, r *http.Request) {
-	temp := template.Must(template.ParseFiles("./server/web/static/profile.html"))
+	temp := template.Must(template.ParseFiles("./server/web/ru/profile.html"))
 
 	fmt.Println("Rendering news template")
 	err := temp.ExecuteTemplate(w, "body", nil)

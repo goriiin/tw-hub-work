@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/patrickmn/go-cache"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
-	"twit-hub111/internal/app"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/http-server/handlers/news"
-	"twit-hub111/internal/http-server/handlers/user"
+	"twit-hub111/internal/http-server/handlers/profile"
+	"twit-hub111/internal/http-server/handlers/search"
+	"twit-hub111/internal/lib/cookies"
 )
 
 //https://qna.habr.com/q/915835
@@ -30,20 +32,12 @@ func main() {
 	log.Info("starting...", slog.String("env", cfg.Env))
 	log.Debug("debug enabled")
 
-	storage, err := postgres.New(cfg.DbConfigPath, log)
+	storage, err := postgres.New(cfg.DbConfigPath)
 	fmt.Println(cfg.DbConfigPath)
 	if err != nil {
 		log.Error("db error", err)
 		os.Exit(1)
 	}
-
-	// TODO: в финальной версии убрать
-	//storage.DropDB()
-	//err = storage.SetDB()
-	//if err != nil {
-	//	log.Error("set db tables error", err)
-	//	os.Exit(1)
-	//}
 
 	log.Info("DB started")
 
@@ -52,10 +46,10 @@ func main() {
 		log.Error("database tables have not been created", err)
 	}
 
-	application := app.New(log, cfg.GRPC.Port, cfg.TokenTTL)
+	appCache := cache.New(-1, 60*time.Minute)
+	cacheService := cookies.NewCacheService(appCache, log)
 
-	go application.GRPCServer.MustRun()
-
+	_ = cacheService
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
@@ -63,10 +57,12 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
-	router.Get("/news", news.News)
-	router.Post("/news", news.NewPost)
-
-	router.Get("/profile", user.Users)
+	router.Get("/ru/news", news.New(log, storage, cacheService).News)
+	router.Get("/news", news.New(log, storage, cacheService).News)
+	router.Post("/news", news.New(log, storage, cacheService).NewPost)
+	router.Get("/ru/search", search.Search)
+	router.Get("/search", search.Search)
+	router.Get("/profile", profile.Users)
 	log.Info("starting server", slog.String("address", cfg.Address))
 
 	done := make(chan os.Signal, 1)
@@ -96,16 +92,5 @@ func main() {
 
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Error("failed to stop server")
-
-		return
 	}
-
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
-
-	sign := <-stop
-
-	log.Info("stopping grpc-app", slog.String("signal", sign.String()))
-
-	application.GRPCServer.Stop()
 }

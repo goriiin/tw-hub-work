@@ -1,0 +1,33 @@
+
+body{
+    /*background-image: url('_xsjeAdWBuk.jpg');*/
+    background-color: #689171;
+    /*background-size: 30vh auto;*/
+}
+
+
+h2 {
+    color: #587a60;
+}
+
+.links {
+    color: #4F3B32;
+}
+
+
+.sign_in {
+    background: #A0B5A4;
+    position: fixed;
+    border-radius: 10px;
+    padding: 45px;
+    display: block;
+    margin: 30vh auto auto 43vw;
+}
+
+.but{
+    background-color: #689171;
+    border-color: #587a60;
+    border-radius: 4px;
+    color: #4F3B32;
+}
+

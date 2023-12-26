@@ -1,11 +1,28 @@
 {{ define "body" }}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Лента новостей</title>
-<!--    <link rel="stylesheet" href="style.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            margin-top: 100px;
+            background-color: rgb(61, 59, 57);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 10px;
+            margin-left: 200px;
+            margin-right: 60px;
+            color: #d7d7d7;
+        }
+
         .topnav {
             z-index: 1001;
             width: 100%;
@@ -28,47 +45,6 @@
 
         .body-back{
             background: rgb(20, 20, 20);
-        }
-
-        .heart-btn {
-            background-color: #555555;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 30%;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .heart-btn:hover {
-            background-color: lightgray;
-        }
-
-        .heart-btn.active {
-            background-color: red;
-        }
-
-        .news-feed {
-            order: 2;
-            /*width: 70%; !* Изменили ширину на 70% *!*/
-            font-family: Arial, sans-serif;
-            overflow: auto;
-            height: calc(100% - 120px);
-            position: relative;
-            top: 30px;
-            border-radius: 10px;
-        }
-
-        .news-item {
-            border-bottom: 1px solid #141414;
-            background: #3d3b39;
-            padding: 10px;
-            color: #eeeeee;
-        }
-
-        .news-item:last-child {
-            border-bottom: none;
         }
 
         .news-item h2 {
@@ -103,10 +79,6 @@
             cursor: pointer;
         }
 
-        .news-list{
-            margin-top: 36px;
-        }
-
         .profile-menu {
             position: fixed;
             top: 60px;
@@ -130,62 +102,28 @@
             background-color: #555;
         }
 
-        .aaaaa {
-            margin-left: 210px;
-            margin-right: 100px;
-            display: block;
-            flex-direction: column;
-            margin-top: 60px;
-            z-index: 2;
-        }
         .form-container button:hover {
             background-color: #141414;
         }
 
-        .form-container {
-            order: 1;
-            margin-top: 10px;
-            align-self: center;
-            position: relative;
-        }
-
-        #own-news-btn {
-            position: absolute; /* устанавливаем позицию кнопки как absolute */
-            top: 100%; /* размещаем кнопку внизу относительно родительского блока */
-            right: 0; /* выравниваем кнопку слева от родительского блока */
-            background: #587a60;
-        }
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
-
     </style>
 </head>
+
 <body class="body-back">
-<div class="topnav">
-    <a href="#">Twit-hub</a>
-</div>
-<div class="aaaaa">
-    <div class="news-feed">
-        <div class="form-container">
-            <form>
-                <textarea type="text" id="own-news" placeholder="Введите свою новость"></textarea>
-                <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
-            </form>
-        </div>
-        <div class="news-list">
-
-        </div>
+    <div class="topnav">
+        <a href="#">Twit-hub</a>
     </div>
-</div>
-
-<div class="profile-menu">
-    <a href="http://localhost:8080/profile">Профиль</a>
-    <a href="http://localhost:8080/news">Новости</a>
-    <a href="#">Поиск автора</a>
-    <a href="#">Выход</a>
-</div>
+    <div class="profile-menu">
+        <a href="http://localhost:8080/profile">Профиль</a>
+        <a href="http://localhost:8080/news">Новости</a>
+        <a href="#">Поиск автора</a>
+        <a href="#">Выход</a>
+    </div>
 </body>
+
 <script>
     const newsList = document.querySelector('.news-list');
 
@@ -193,24 +131,12 @@
         const newsItem = document.createElement('div');
         newsItem.className = 'news-item';
 
-        const newsDescription = document.createElement('p');
-        newsDescription.textContent = description;
-
-        const newsAuthor = document.createElement('p'); /* Добавили элемент для автора */
+        const newsAuthor = document.createElement('p');
         newsAuthor.textContent = 'Автор: ' + author;
 
-        const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
-        likeButton.textContent = '❤';
-        likeButton.className = 'heart-btn';
-        likeButton.onclick = 'changeColor()';
-
-        // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
-        // commentButton.textContent = 'Комментарий';
 
         newsItem.appendChild(newsDescription);
         newsItem.appendChild(newsAuthor);
-        newsItem.appendChild(likeButton);
-        // newsItem.appendChild(commentButton);
 
         newsList.appendChild(newsItem);
     }
@@ -221,21 +147,6 @@
         const description = `Краткое описание новости ${i + 1}`;
         addNews(author, description);
     }
-
-    function changeColor() {
-        var btn = document.querySelector('.heart-btn');
-        btn.classList.toggle('active');
-    }
-
-    // document.getElementById('photo-upload').addEventListener('change', function() {
-    //     var file = this.files[0];
-    //     var reader = new FileReader();
-    //     reader.onload = function(e) {
-    //         var imageBase64 = e.target.result;
-    //         console.log('Image converted to base64:', imageBase64);
-    //     };
-    //     reader.readAsDataURL(file);
-    // });
 
     function addOwnNews() {
         const text = document.getElementById('own-news').value;
@@ -294,5 +205,6 @@
     //     result.innerHTML = "<hr/>Bad<hr/>"
     // }
 </script>
+</body>
 </html>
 {{ end }}

@@ -123,10 +123,14 @@
             font-size: 16px;
         }
 
-        .news-item p {
+        .news-item a {
             margin: 5px 0;
             font-size: 14px;
             border-radius: 10px;
+            color: #d7d7d7;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-weight: bold;
+            text-decoration: none;
         }
 
         .form-container textarea {
@@ -209,10 +213,10 @@
 <body class="body-back">
 <header>
     <div class="profile-info">
-        <img src="_xsjeAdWBuk.jpg" alt="Профильная фотография" class="profile-pic">
+        <img src="isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
         <div class="user-info">
             <h1>Имя пользователя</h1>
-            <p>Краткая информация о пользователе</p>
+            <p>Дата создания страницы</p>
         </div>
     </div>
 </header>
@@ -230,51 +234,55 @@
 <div class="profile-menu">
     <a href="http://localhost:8080/profile">Профиль</a>
     <a href="http://localhost:8080/news">Новости</a>
-    <a href="#">Поиск автора</a>
-    <a href="#">Выход</a>
+    <a href="http://localhost:8080/search">Поиск</a>
+    <a href="#">Смена языка</a>
 </div>
 </body>
 
     <script>
         const newsList = document.querySelector('.news-list');
 
-        function addNews(author, description) {
+        function addNews(newsID, author, description, authorId) {
             const newsItem = document.createElement('div');
             newsItem.className = 'news-item';
+            newsItem.id = newsID
 
             const newsDescription = document.createElement('p');
             newsDescription.textContent = description;
 
-            const newsAuthor = document.createElement('p'); /* Добавили элемент для автора */
-            newsAuthor.textContent = 'Автор: ' + author;
+            const newsAuthor = document.createElement('a'); /* Добавили элемент для автора */
+            newsAuthor.textContent = author;
+            newsAuthor.id = authorId
+            newsAuthor.href = '/user/' + authorId;
 
             const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
-            likeButton.textContent = '❤';
+            likeButton.textContent = '❤️';
             likeButton.className = 'heart-btn';
             likeButton.onclick = 'changeColor()';
 
+            // const trashButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+            // trashButton.textContent = '🗑️';
+            // trashButton.className = 'heart-btn';
+            // trashButton.onclick = '';
+
             // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
             // commentButton.textContent = 'Комментарий';
-
-            newsItem.appendChild(newsDescription);
             newsItem.appendChild(newsAuthor);
+            newsItem.appendChild(newsDescription);
             newsItem.appendChild(likeButton);
+            // newsItem.appendChild(trashButton);
+
             // newsItem.appendChild(commentButton);
 
             newsList.appendChild(newsItem);
         }
 
         // Добавляем случайные новости для тестирования
-        for (let i = 0; i < 20; i++) {
-            const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
-            const description = `Краткое описание новости ${i + 1}`;
-            addNews(author, description);
-        }
-
-        function changeColor() {
-            var btn = document.querySelector('.heart-btn');
-            btn.classList.toggle('active');
-        }
+        // for (let i = 0; i < 20; i++) {
+        //     const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
+        //     const description = `Краткое описание новости ${i + 1}`;
+        //     addNews(author, description, i);
+        // }
 
         // document.getElementById('photo-upload').addEventListener('change', function() {
         //     var file = this.files[0];

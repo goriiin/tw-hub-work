@@ -1,0 +1,299 @@
+{{ define "body" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Лента новостей</title>
+    <!--    <link rel="stylesheet" href="style.css">-->
+    <style>
+        .topnav {
+            z-index: 1001;
+            width: 100%;
+            background-color: #333;
+            overflow: hidden;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 35px;
+        }
+
+        .body-back{
+            background: rgb(20, 20, 20);
+        }
+
+        .heart-btn {
+            background-color: #555555;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30%;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .heart-btn:hover {
+            background-color: lightgray;
+        }
+
+        .heart-btn.active {
+            background-color: red;
+        }
+
+        .news-feed {
+            order: 2;
+            /*width: 70%; !* Изменили ширину на 70% *!*/
+            font-family: Arial, sans-serif;
+            overflow: auto;
+            height: calc(100% - 120px);
+            position: relative;
+            top: 30px;
+            border-radius: 10px;
+        }
+
+        .news-item {
+            border-bottom: 1px solid #141414;
+            background: #3d3b39;
+            padding: 10px;
+            color: #eeeeee;
+        }
+
+        .news-item:last-child {
+            border-bottom: none;
+        }
+
+        .news-item h2 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .news-item p {
+            margin: 5px 0;
+            font-size: 14px;
+            border-radius: 10px;
+        }
+
+        .form-container textarea {
+            resize: none;
+            height: 150px;
+            border-radius: 10px;
+            overflow: auto;
+            border-width: 0;
+            display: inline-block;
+            width: 100% !important;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .form-container button {
+            background-color: #141414;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .news-list{
+            margin-top: 36px;
+        }
+
+        .profile-menu {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 150px;
+            height: calc(100% - 60px);
+            background: rgb(20, 20, 20);
+            padding: 10px;
+            z-index: 1;
+        }
+
+        .profile-menu a {
+            text-align: left;
+            display: inline-block;
+            margin-bottom: 10px;
+            color: #d7d7d7;
+            font-size: 25px;
+            text-decoration-line: none;
+        }
+
+        .profile-menu a:hover {
+            background-color: #555;
+        }
+
+        .aaaaa {
+            margin-left: 210px;
+            margin-right: 100px;
+            display: block;
+            flex-direction: column;
+            margin-top: 60px;
+            z-index: 2;
+        }
+        .form-container button:hover {
+            background-color: #141414;
+        }
+
+        .form-container {
+            order: 1;
+            margin-top: 10px;
+            align-self: center;
+            position: relative;
+        }
+
+        #own-news-btn {
+            position: absolute; /* устанавливаем позицию кнопки как absolute */
+            top: 100%; /* размещаем кнопку внизу относительно родительского блока */
+            right: 0; /* выравниваем кнопку слева от родительского блока */
+            background: #587a60;
+        }
+        .topnav a, .profile-menu a{
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+    </style>
+</head>
+<body class="body-back">
+<div class="topnav">
+    <a href="#">Twit-hub</a>
+</div>
+<div class="aaaaa">
+    <div class="news-feed">
+        <div class="form-container">
+            <form>
+                <textarea type="text" id="own-news" placeholder="Enter your news"></textarea>
+                <button onclick="addOwnNews()" id="own-news-btn">Send</button>
+            </form>
+        </div>
+        <div class="news-list">
+
+        </div>
+    </div>
+</div>
+
+<div class="profile-menu">
+    <a href="http://localhost:8080/profile">Profile</a>
+    <a href="http://localhost:8080/news"> Events  </a>
+    <a href="http://localhost:8080/search">Search</a>
+    <a href="#">Change Lang</a>
+</div>
+</body>
+<script>
+    const newsList = document.querySelector('.news-list');
+
+    function addNews(author, description) {
+        const newsItem = document.createElement('div');
+        newsItem.className = 'news-item';
+
+        const newsDescription = document.createElement('p');
+        newsDescription.textContent = description;
+
+        const newsAuthor = document.createElement('p'); /* Добавили элемент для автора */
+        newsAuthor.textContent = 'Автор: ' + author;
+
+        const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+        likeButton.textContent = '❤';
+        likeButton.className = 'heart-btn';
+        likeButton.onclick = 'changeColor()';
+
+        // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
+        // commentButton.textContent = 'Комментарий';
+
+        newsItem.appendChild(newsDescription);
+        newsItem.appendChild(newsAuthor);
+        newsItem.appendChild(likeButton);
+        // newsItem.appendChild(commentButton);
+
+        newsList.appendChild(newsItem);
+    }
+
+    // Добавляем случайные новости для тестирования
+    for (let i = 0; i < 20; i++) {
+        const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
+        const description = `Краткое описание новости ${i + 1}`;
+        addNews(author, description);
+    }
+
+    function changeColor() {
+        var btn = document.querySelector('.heart-btn');
+        btn.classList.toggle('active');
+    }
+
+    // document.getElementById('photo-upload').addEventListener('change', function() {
+    //     var file = this.files[0];
+    //     var reader = new FileReader();
+    //     reader.onload = function(e) {
+    //         var imageBase64 = e.target.result;
+    //         console.log('Image converted to base64:', imageBase64);
+    //     };
+    //     reader.readAsDataURL(file);
+    // });
+
+    function addOwnNews() {
+        const text = document.getElementById('own-news').value;
+
+        fetch('/news', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text: text })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Ошибка:', error));
+    }
+
+    // arm_url = location.protocol + "//" + location.host + "/armstrong/calculate.json";
+    // function send_query(){
+    //     var frm = document.forms.calc_form;
+    //     var param_str = "?n=" + encodeURIComponent(frm.n.value);
+    //     var http_request = new XMLHttpRequest();
+    //     http_request.open("GET", arm_url + param_str, true);
+    //     http_request.onreadystatechange = function (){
+    //         var done = 4, ok = 200;
+    //         if (http_request.readyState == done && http_request.status == ok){
+    //             my_JSON_object = JSON.parse(http_request.responseText);
+    //             show_result(my_JSON_object);
+    //         }
+    //         else {
+    //             show_bad_request();
+    //         }
+    //     };
+    //     http_request.send(null);
+    //     return false;
+    // }
+    //
+    // function show_result(data){
+    //     console.log(data);
+    //     var result = document.getElementById("result");
+    //     var frm = document.forms["calc_form"];
+    //     result.innerHTML = "<h1>Вход: " + frm.n.value + "</h1>";
+    //
+    //     var tableHTML = '<table>'; // Start of the table
+    //     tableHTML += '<tr><th>Index</th><th>Value</th></tr>'; // Table header
+    //
+    //     for (let i = 0; i < data.value.length; i++){
+    //         tableHTML += '<tr><td>' + (i+1) + '' + data.value[i] + '</td></tr>';
+    //     }
+    //
+    //     tableHTML += '</table>'; // End of the table
+    //     result.innerHTML += tableHTML;
+    // }
+    //
+    // function show_bad_request(){
+    //     var result  = document.getElementById("result")
+    //     result.innerHTML = "<hr/>Bad<hr/>"
+    // }
+</script>
+</html>
+{{ end }}

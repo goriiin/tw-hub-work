@@ -10,4 +10,5 @@ type User struct {
 	Alive   bool      `json:"alive,omitempty"`
 	Pass    string    `json:"pass,omitempty"`
 	OldPass string    `json:"old_pass,omitempty"`
+	Photo   string    `json:"photo,omitempty"`
 }

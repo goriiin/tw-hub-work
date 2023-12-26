@@ -3,30 +3,11 @@ package twits
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"twit-hub111/internal/db/postgres"
 )
 
 // TODO: логгирование
-
-type NewsStorage interface {
-	ShowFeed(
-		ctx context.Context,
-		s *postgres.Storage,
-		userId int,
-	)
-	AddRating(
-		ctx context.Context,
-		s *postgres.Storage,
-		userId int,
-		postId int,
-	)
-	DelRating(
-		ctx context.Context,
-		s *postgres.Storage,
-		userId int,
-		postId int,
-	)
-}
 
 func ShowFeed(
 	ctx context.Context,
@@ -37,15 +18,13 @@ func ShowFeed(
 
 	posts, err := s.FeedTwits(ctx, userId)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
 	jsonBytes, err := json.Marshal(posts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", op, err)
 	}
-
-	//fmt.Println(string(jsonBytes))
 
 	return jsonBytes, nil
 }
@@ -56,11 +35,15 @@ func AddRating(
 	s *postgres.Storage,
 	userId int,
 	postId int,
-) {
+) error {
+	const op = "services.twits.AddRating"
+
 	err := s.NewLike(ctx, userId, postId)
 	if err != nil {
-		return
+		return fmt.Errorf("%s: %w", op, err)
 	}
+
+	return nil
 }
 
 func DelRating(
@@ -69,6 +52,7 @@ func DelRating(
 	userId int,
 	twitId int,
 ) {
+	const op = "services.twits."
 	err := s.DeleteLike(ctx, userId, twitId)
 	if err != nil {
 		return

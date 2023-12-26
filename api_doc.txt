@@ -69,4 +69,8 @@
 
 /search/{username}
 - GET: поиск пользователей
-
+{
+    "userID": 101,
+    "profilePhoto": "base64",
+    "username": "adventurer1"
+}

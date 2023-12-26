@@ -1,6 +1,6 @@
 package domain
 
 type UserProfile struct {
-	User  *User
+	User  *Author
 	Posts []Post
 }
