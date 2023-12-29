@@ -1,0 +1,36 @@
+{{ define "body" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Лента новостей</title>
+    <link rel="stylesheet" href="/web/static/newsStyle.css">
+</head>
+<body class="body-back" onload="renderNews()">
+<div class="topnav">
+    <a href="http://localhost:8080/en/news">Twit-hub</a>
+    <a href="http://localhost:8080/ru/news">🇷🇺</a>
+</div>
+<div class="aaaaa">
+    <div class="news-feed">
+        <div class="form-container">
+            <form>
+                <textarea type="text" id="own-news" placeholder="Enter your news"></textarea>
+                <button onclick="addOwnNews()" id="own-news-btn">Send</button>
+            </form>
+        </div>
+        <div class="news-list">
+
+        </div>
+    </div>
+</div>
+
+<div class="profile-menu">
+    <a href="http://localhost:8080/en/profile">Profile</a>
+    <a href="http://localhost:8080/en/news">Events</a>
+    <a href="http://localhost:8080/en/search">Search</a>
+</div>
+</body>
+<script src="/web/static/main.js"></script>
+</html>
+{{ end }}

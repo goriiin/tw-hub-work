@@ -27,7 +27,7 @@ func New(
 	}
 }
 
-func (u *UserService) Users(w http.ResponseWriter, r *http.Request) {
+func (u *UserService) User(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
 
 	//cookie, err := r.Cookie("token")
@@ -41,11 +41,11 @@ func (u *UserService) Users(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	if r.URL.Path[0:3] == "/ru" {
-		temp = template.Must(template.ParseFiles("web/ru/profile/profile.html"))
+		temp = template.Must(template.ParseFiles("web/ru/profile/profile.gohtml"))
 	}
 
 	if r.URL.Path[0:3] == "/en" {
-		temp = template.Must(template.ParseFiles("web/en/profile/profile.html"))
+		temp = template.Must(template.ParseFiles("web/en/profile/profile.gohtml"))
 	}
 
 	//tok := cookie.Value
@@ -72,10 +72,18 @@ func (u *UserService) Users(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *UserService) Follow(w http.ResponseWriter, r *http.Request) {
+func (u *UserService) Profile(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (u *UserService) Follow(w http.ResponseWriter, r *http.Request) {
+	// TODO: берем id и смотрим, есть ли подписка, если нет, то возвращаем ok, при наличии подписки, также ok
+}
+
 func (u *UserService) IsFollow(w http.ResponseWriter, r *http.Request) {
+	// TODO: проверка есть ли подписка
+}
+
+func (u *UserService) UnFollow(w http.ResponseWriter, r *http.Request) {
 
 }

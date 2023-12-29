@@ -6,7 +6,7 @@ import (
 )
 
 // NewToken creates new JWT token for given profile and app.
-func NewToken(user domain.User) (string, error) {
+func NewToken(user domain.TokenUser) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	// Добавляем в токен всю необходимую информацию

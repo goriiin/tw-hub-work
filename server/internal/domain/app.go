@@ -9,3 +9,20 @@ func NewApp() *App {
 		Secret: "MY_SECRET",
 	}
 }
+
+type UserData struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Pass  string `json:"pass"`
+}
+
+type RegData struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type TokenUser struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+}

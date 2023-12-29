@@ -14,11 +14,7 @@ import (
 	"time"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/db/postgres"
-	"twit-hub111/internal/http-server/handlers/auth/login"
-	"twit-hub111/internal/http-server/handlers/auth/reg"
-	"twit-hub111/internal/http-server/handlers/news"
-	"twit-hub111/internal/http-server/handlers/profile"
-	"twit-hub111/internal/http-server/handlers/search"
+	"twit-hub111/internal/httpServer"
 	"twit-hub111/internal/lib/cookies"
 )
 
@@ -44,9 +40,6 @@ func main() {
 	log.Info("DB started")
 
 	err = storage.TestSelect()
-	if err != nil {
-		log.Error("database tables have not been created", err)
-	}
 
 	appCache := cache.New(-1, 60*time.Minute)
 	cacheService := cookies.NewCacheService(appCache, log)
@@ -62,36 +55,42 @@ func main() {
 	fs := http.FileServer(http.Dir("./web/static"))
 	router.Handle("/web/static/*", http.StripPrefix("/web/static", fs))
 
-	router.Get("/ru/login", login.New(log, storage, cacheService).Login)
-	router.Get("/ru/reg", reg.New(log, storage, cacheService).Reg)
-	router.Get("/ru/news", news.New(log, storage, cacheService).News)
-	router.Get("/ru/search", search.New(log, storage, cacheService).Search)
-	router.Get("/ru/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
-	router.Get("/ru/user/{id}", profile.New(log, storage, cacheService).Users)
+	httpServ := httpServer.New(log, storage, cacheService)
+
+	router.Get("/ru/login", httpServ.L.Login)
+	router.Get("/ru/reg", httpServ.R.Reg)
+	router.Get("/ru/news", httpServ.N.News)
+	router.Get("/ru/search", httpServ.S.Search)
+
+	router.Get("/ru/user/{id}", httpServ.U.User)
 	// переход на собственный профиль
-	router.Get("/ru/profile", profile.New(log, storage, cacheService).Users)
-	router.Get("/ru/{id}/follow", profile.New(log, storage, cacheService).Follow)
-	router.Get("/ru/{id}/is_follow", profile.New(log, storage, cacheService).IsFollow)
+	router.Get("/ru/profile", httpServ.U.Profile)
+	router.Get("/ru/user/{id}/follow", httpServ.U.Profile)
+	router.Get("/ru/user/{id}/is_follow", httpServ.U.Profile)
+	router.Get("/ru/user/{id}/unfollow", httpServ.U.Profile)
 
-	router.Get("/en/login", login.New(log, storage, cacheService).Login)
-	router.Get("/en/reg", reg.New(log, storage, cacheService).Reg)
-	router.Get("/en/news", news.New(log, storage, cacheService).News)
-	router.Get("/en/search", search.New(log, storage, cacheService).Search)
-	router.Get("/en/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
-	router.Get("/en/user/{id}", profile.New(log, storage, cacheService).Users)
+	router.Get("/en/login", httpServ.L.Login)
+	router.Get("/en/reg", httpServ.R.Reg)
+	router.Get("/en/news", httpServ.N.News)
+	router.Get("/en/search", httpServ.S.Search)
+	router.Get("/en/user/{id}", httpServ.U.User)
 	// переход на собственный профиль
-	router.Get("/en/profile", profile.New(log, storage, cacheService).Users)
-	router.Get("/en/{id}/follow", profile.New(log, storage, cacheService).Follow)
-	router.Get("/en/{id}/is_follow", profile.New(log, storage, cacheService).IsFollow)
+	router.Get("/en/profile", httpServ.U.Profile)
+	router.Get("/en/user/{id}/follow", httpServ.U.Profile)
+	router.Get("/en/user/{id}/is_follow", httpServ.U.Profile)
+	router.Get("/en/user/{id}/unfollow", httpServ.U.Profile)
 
-	router.Post("/en/login", login.New(log, storage, cacheService).LogData)
-	router.Post("/ru/login", login.New(log, storage, cacheService).LogData)
+	router.Post("/en/login", httpServ.L.LogData)
+	router.Post("/ru/login", httpServ.L.LogData)
 
-	router.Post("/en/reg", reg.New(log, storage, cacheService).RegData)
-	router.Post("/ru/reg", reg.New(log, storage, cacheService).RegData)
+	router.Post("/en/reg", httpServ.R.RegData)
+	router.Post("/ru/reg", httpServ.R.RegData)
 
-	router.Post("/ru/news", news.New(log, storage, cacheService).NewPost)
-	router.Post("/en/news", news.New(log, storage, cacheService).NewPost)
+	router.Post("/ru/news", httpServ.N.NewPost)
+	router.Post("/en/news", httpServ.N.NewPost)
+
+	router.Get("/search/{nickname}", httpServ.S.SearchNick)
+	router.Get("/news/render", httpServ.N.RenderNews)
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 

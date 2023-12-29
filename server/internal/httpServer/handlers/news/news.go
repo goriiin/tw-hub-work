@@ -32,7 +32,6 @@ func New(
 
 func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
-	fmt.Println(r.URL.Path[0:3])
 	//cookie, err := r.Cookie("token")
 	//flag, err := n.c.IsCookieValid(cookie)
 	//if err != nil {
@@ -44,11 +43,11 @@ func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	if r.URL.Path[0:3] == "/ru" {
-		temp = template.Must(template.ParseFiles("web/ru/news/newsFeed.html"))
+		temp = template.Must(template.ParseFiles("web/ru/news/newsFeed.gohtml"))
 	}
 
 	if r.URL.Path[0:3] == "/en" {
-		temp = template.Must(template.ParseFiles("web/en/news/newsFeed.html"))
+		temp = template.Must(template.ParseFiles("web/en/news/newsFeed.gohtml"))
 	}
 
 	//tok := cookie.Value
@@ -64,6 +63,7 @@ func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	//if err != nil {
 	//	_, _ = fmt.Fprintf(w, err.Error())
 	//}
+
 	err := temp.ExecuteTemplate(w, "body", nil)
 
 	//err := temp.ExecuteTemplate(w, "body", info)
@@ -91,4 +91,18 @@ func (n *NewsService) NewPost(w http.ResponseWriter, r *http.Request) {
 
 	// TODO получаю id с куки и отдаю в базу
 	fmt.Println("Received text:", data)
+}
+
+type post struct {
+	Id       int    `json:"id"`
+	Username string `json:"username"`
+	Text     string `json:"text"`
+}
+
+// TODO сделать функцию onload и прогружать новости
+func (n *NewsService) RenderNews(w http.ResponseWriter, r *http.Request) {
+
+	p := []post{post{1, "John", "HELLLO WORLD"}, {1, "John", "my new post!!!"}}
+
+	_ = json.NewEncoder(w).Encode(p)
 }

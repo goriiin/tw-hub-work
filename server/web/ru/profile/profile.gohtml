@@ -3,9 +3,56 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Лента новостей</title>
-    <!--    <link rel="stylesheet" href="style.css">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        header {
+            margin-top: 100px;
+            background-color: rgb(61, 59, 57);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 10px;
+            margin-left: 200px;
+            margin-right: 60px;
+            color: #d7d7d7;
+        }
+        .profile-info {
+            display: flex;
+            align-items: flex-start;  /* Изменено */
+        }
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin-right: 20px;   /* Новое */
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+        .show-info-btn {
+            border: none;
+            background-color: inherit;
+            padding: 14px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .show-info-btn:hover {background: #eee;}
+        .dop-info {
+            display: none;
+            margin-top: 10px;  /* Изменено */
+        }
+
         .topnav {
             z-index: 1001;
             width: 100%;
@@ -65,8 +112,6 @@
             background: #3d3b39;
             padding: 10px;
             color: #eeeeee;
-            border-radius: 5px;
-            margin: 5px;
         }
 
         .news-item:last-child {
@@ -123,7 +168,6 @@
             padding: 10px;
             z-index: 1;
         }
-
         .profile-menu a {
             text-align: left;
             display: inline-block;
@@ -142,7 +186,6 @@
             margin-right: 100px;
             display: block;
             flex-direction: column;
-            margin-top: 60px;
             z-index: 2;
         }
         .form-container button:hover {
@@ -165,118 +208,86 @@
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+        .follow-btn {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .follow-btn:active {
+            background-color: #3e8e41;
+        }
 
     </style>
 </head>
 <body class="body-back">
-<div class="topnav">
-    <a href="http://localhost:8080/en/news">Twit-hub</a>
-    <a href="http://localhost:8080/ru/news">🇷🇺</a>
-</div>
-<div class="aaaaa">
-    <div class="news-feed">
-        <div class="form-container">
-            <form>
-                <textarea type="text" id="own-news" placeholder="Enter your news"></textarea>
-                <button onclick="addOwnNews()" id="own-news-btn">Send</button>
-            </form>
-        </div>
-        <div class="news-list">
-
+<header onload="checkFollow()">
+    <div class="profile-info">
+        <img src="/web/static/isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
+        <div class="user-info">
+            <h1>Имя пользователя</h1>
+            <p>Дата создания страницы</p>
+            <button id="followButton" class="follow-btn" onclick="follow()">Подписаться</button>
         </div>
     </div>
+</header>
+<div class="topnav">
+    <a href="http://localhost:8080/ru/news">Twit-hub</a>
+    <a href="http://localhost:8080/en/news">🇺🇸</a>
 </div>
+    <div class="aaaaa">
+        <div class="news-feed">
+            <div class="news-list">
 
+            </div>
+        </div>
+    </div>
 <div class="profile-menu">
-    <a href="http://localhost:8080/en/profile">Profile</a>
-    <a href="http://localhost:8080/en/news">Events</a>
-    <a href="http://localhost:8080/en/search">Search</a>
+    <a href="http://localhost:8080/ru/profile">Профиль</a>
+    <a href="http://localhost:8080/ru/news">Новости</a>
+    <a href="http://localhost:8080/ru/search">Поиск</a>
 </div>
 </body>
-<script>
-    const newsList = document.querySelector('.news-list');
+    <script>
 
-
-
-    function addNews(authorId, author, description) {
-        const newsItem = document.createElement('div');
-        newsItem.className = 'news-item';
-
-        const newsDescription = document.createElement('p');
-        newsDescription.textContent = description;
-
-        const newsAuthor = document.createElement('a'); /* Добавили элемент для автора */
-        newsAuthor.textContent = author;
-        newsAuthor.id = authorId
-        newsAuthor.href = '/en/user/' + authorId;
-
-        // const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
-        // likeButton.textContent = '❤';
-        // likeButton.className = 'heart-btn';
-        // likeButton.onclick = 'changeColor()';
-
-        // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
-        // commentButton.textContent = 'Комментарий';
-        newsItem.appendChild(newsAuthor);
-        newsItem.appendChild(newsDescription);
-
-        // newsItem.appendChild(likeButton);
-        // newsItem.appendChild(commentButton);
-
-        newsList.appendChild(newsItem);
-    }
-
-    // // Добавляем случайные новости для тестирования
-    // for (let i = 0; i < 20; i++) {
-    //     const author = `Автор новости ${i + 1}`; /* Добавили автора новости */
-    //     const description = `Краткое описание новости ${i + 1}`;
-    //     addNews(i, author, description);
-    // }
-    function renderNews() {
-        fetch('/en/news')
-            .then(response => response.json())
-            .then(data => {
-                for (let i = 0; i < data.length; i++) {
-                    const news = data[i];
-                    addNews(news.userId, news.username, news.text);
-                    console.log(news.userId, news.username, news.text)
+       function checkFollow() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response.ans === "yes") {
+                        document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+                    }
                 }
-            })
-            .catch(error => console.error(error));
-    }
+            };
+            xhttp.open("GET", "/ru/user/{id}/isfollow", true);
+            xhttp.send();
+        }
+        function follow() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response.ans === "yes") {
+                        document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+                    } else {
+                        document.getElementById("followButton").style.backgroundColor = "#4CAF50";
+                    }
+                }
+            };
+            xhttp.open("GET", "/user/{id}/follow", true);
+            xhttp.send();
+            document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+        }
 
-    // Пример использования
-    renderNews();
 
-    // function changeColor() {
-    //     var btn = document.querySelector('.heart-btn');
-    //     btn.classList.toggle('active');
-    // }
-
-    // document.getElementById('photo-upload').addEventListener('change', function() {
-    //     var file = this.files[0];
-    //     var reader = new FileReader();
-    //     reader.onload = function(e) {
-    //         var imageBase64 = e.target.result;
-    //         console.login('Image converted to base64:', imageBase64);
-    //     };
-    //     reader.readAsDataURL(file);
-    // });
-
-    function addOwnNews() {
-        const text = document.getElementById('own-news').value;
-
-        fetch('/news', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ text: text })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Ошибка:', error));
-    }
-</script>
+    </script>
+</body>
 </html>
 {{ end }}

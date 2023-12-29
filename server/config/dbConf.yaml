@@ -3,4 +3,4 @@ Port: "54320"
 Username: "postgres"
 Password: "123"
 DbName: "twit_hub"
-Timeout: 5
+Timeout: 5s

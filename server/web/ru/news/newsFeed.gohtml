@@ -1,0 +1,39 @@
+{{ define "body" }}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лента новостей</title>
+    <link rel="stylesheet" href="/web/static/newsStyle.css">
+</head>
+<body class="body-back" onload="renderNews()">
+<div class="topnav">
+    <a href="http://localhost:8080/ru/news">Twit-hub</a>
+    <a href="http://localhost:8080/en/news">🇺🇸</a>
+</div>
+<div class="aaaaa">
+    <div class="news-feed">
+        <div class="form-container">
+            <form>
+                <textarea type="text" id="own-news" placeholder="Введите свою новость"></textarea>
+                <button onclick="addOwnNews()" id="own-news-btn">Отправить</button>
+            </form>
+        </div>
+        <div class="news-list">
+
+        </div>
+    </div>
+</div>
+
+<div class="profile-menu">
+    <a href="http://localhost:8080/ru/profile">Профиль</a>
+    <a href="http://localhost:8080/ru/news">Новости</a>
+    <a href="http://localhost:8080/ru/search">Поиск</a>
+</div>
+</body>
+<script>
+
+</script>
+</html>
+{{ end }}
