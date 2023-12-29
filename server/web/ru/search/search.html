@@ -125,15 +125,15 @@
         }
     </style>
 </head>
-<body class="body-back">
+<body class="body-back" >
 <div class="topnav">
-    <a href="#">Twit-hub</a>
+    <a href="http://localhost:8080/ru/news">Twit-hub</a>
+    <a href="http://localhost:8080/en/search">🇺🇸</a>
 </div>
 <div class="profile-menu">
-    <a href="http://localhost:8080/profile">Профиль</a>
-    <a href="http://localhost:8080/news">Новости</a>
-    <a href="http://localhost:8080/search">Поиск</a>
-    <a href="#">Смена языка</a>
+    <a href="http://localhost:8080/ru/profile">Профиль</a>
+    <a href="http://localhost:8080/ru/news">Новости</a>
+    <a href="http://localhost:8080/ru/search">Поиск</a>
 </div>
 <form>
     <label for="search">Поиск пользователей:</label>
@@ -144,72 +144,75 @@
 </div>
 <script>
     // Обработчик отправки формы
-    document.querySelector('form').addEventListener('submit', function(event) {
+    document.querySelector('form').addEventListener('submit', async function(event) {
         event.preventDefault();
         // Получаем значение поля ввода
-        var search = document.querySelector('#search').value;
+        const search = document.querySelector('#search').value;
         // Отправляем запрос на сервер
-        fetch('/search/' + search)
+        const response = await fetch('/ru/search/' + search)
             .then(function(response) {
                 return response.json();
             })
             .then(function(data) {
+                console.log(data)
                 // Очищаем результаты предыдущего поиска
-                document.querySelector('#results').innerHTML = '';
-                // Выводим результаты поиска
+                document.getElementById('results').innerHTML = '';
+        // Выводим результаты поиска
                 data.forEach(function(user) {
                     var result = document.createElement('div');
-                    result.classList.add('result');
-                    var img = document.createElement('img');
-                    img.src = user.profilePhoto;
+                    result.className = 'result';
+
+                    var img = document.createElement("img");
+                    img.src = "/web/static/isITQX_Q7OM.jpg";
                     result.appendChild(img);
-                    var a = document.createElement('a');
-                    a.href = '/user/' + user.userID;
-                    a.textContent = user.username;
+
+                    var a = document.createElement("a");
+                    a.href = '/user/' + user.id;
+                    a.textContent = user.nick;
                     result.appendChild(a);
-                    document.querySelector('#results').appendChild(result);
+                    document.getElementById('results').appendChild(result);
                 });
             });
     });
 
-    // Массив с данными для вывода
-    var data = [
-        { userID: 101, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer1" },
-        { userID: 102, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer2" },
-        { userID: 103, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer3" },
-        { userID: 104, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer4" },
-        { userID: 105, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer5" },
-        { userID: 106, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer6" },
-        { userID: 107, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer7" },
-        { userID: 108, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer8" },
-        { userID: 109, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer9" },
-        { userID: 110, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer10" }
-    ];
-
-    // Функция, которая выводит данные на экран
-    function displayData() {
-        // Очищаем результаты предыдущего поиска
-        document.querySelector('#results').innerHTML = '';
-        // Выводим результаты поиска
-        data.forEach(function(user) {
-            var result = document.createElement('div');
-            result.classList.add('result');
-            var img = document.createElement('img');
-            img.src = user.profilePhoto;
-            result.appendChild(img);
-            var a = document.createElement('a');
-            a.href = '/user/' + user.userID;
-            a.textContent = user.username;
-            result.appendChild(a);
-            document.querySelector('#results').appendChild(result);
-        });
-    }
-
-    // Обработчик события загрузки страницы
-    window.addEventListener("load", function() {
-        // Выводим данные на экран
-        displayData();
-    });
+    // // Массив с данными для вывода
+    // var data = [
+    //     { userID: 101, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer1" },
+    //     { userID: 102, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer2" },
+    //     { userID: 103, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer3" },
+    //     { userID: 104, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer4" },
+    //     { userID: 105, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer5" },
+    //     { userID: 106, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer6" },
+    //     { userID: 107, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer7" },
+    //     { userID: 108, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer8" },
+    //     { userID: 109, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer9" },
+    //     { userID: 110, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer10" }
+    // ];
+    //
+    // // Функция, которая выводит данные на экран
+    // function displayData() {
+    //     // Очищаем результаты предыдущего поиска
+    //     document.querySelector('#results').innerHTML = '';
+    //     // Выводим результаты поиска
+    //     data.forEach(function(user) {
+    //         var result = document.createElement('div');
+    //         result.classList.add('result');
+    //         var img = document.createElement('img');
+    //         img.src = user.profilePhoto;
+    //         result.appendChild(img);
+    //         var a = document.createElement('a');
+    //         a.href = '/user/' + user.userID;
+    //         a.textContent = user.username;
+    //         result.appendChild(a);
+    //         document.querySelector('#results').appendChild(result);
+    //     });
+    // }
+    //
+    // // Обработчик события загрузки страницы
+    // window.addEventListener("load", function() {
+    //     // Выводим данные на экран
+    //     displayData();
+    // });
 </script>
 </body>
 </html>

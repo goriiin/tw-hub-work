@@ -190,9 +190,9 @@
 </div>
 
 <div class="profile-menu">
-    <a href="http://localhost:8080/profile">Профиль</a>
-    <a href="http://localhost:8080/news">Новости</a>
-    <a href="http://localhost:8080/search">Поиск</a>
+    <a href="http://localhost:8080/ru/profile">Профиль</a>
+    <a href="http://localhost:8080/ru/news">Новости</a>
+    <a href="http://localhost:8080/ru/search">Поиск</a>
 </div>
 </body>
 <script>
@@ -240,7 +240,7 @@
 
     function addOwnNews() {
         const text = document.getElementById('own-news').value;
-        fetch('/news', {
+        fetch('/ru/news', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -252,7 +252,7 @@
             .catch(error => console.error('Ошибка:', error));
     }
     function renderNews() {
-        fetch('/en/news')
+        fetch('/ru/news')
             .then(response => response.json())
             .then(data => {
                 for (let i = 0; i < data.length; i++) {

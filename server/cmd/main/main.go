@@ -59,12 +59,19 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	fs := http.FileServer(http.Dir("./web/static"))
+	router.Handle("/web/static/*", http.StripPrefix("/web/static", fs))
+
 	router.Get("/ru/login", login.New(log, storage, cacheService).Login)
 	router.Get("/ru/reg", reg.New(log, storage, cacheService).Reg)
 	router.Get("/ru/news", news.New(log, storage, cacheService).News)
 	router.Get("/ru/search", search.New(log, storage, cacheService).Search)
 	router.Get("/ru/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
 	router.Get("/ru/user/{id}", profile.New(log, storage, cacheService).Users)
+	// переход на собственный профиль
+	router.Get("/ru/profile", profile.New(log, storage, cacheService).Users)
+	router.Get("/ru/{id}/follow", profile.New(log, storage, cacheService).Follow)
+	router.Get("/ru/{id}/is_follow", profile.New(log, storage, cacheService).IsFollow)
 
 	router.Get("/en/login", login.New(log, storage, cacheService).Login)
 	router.Get("/en/reg", reg.New(log, storage, cacheService).Reg)
@@ -72,6 +79,10 @@ func main() {
 	router.Get("/en/search", search.New(log, storage, cacheService).Search)
 	router.Get("/en/search/{nickname}", search.New(log, storage, cacheService).SearchNick)
 	router.Get("/en/user/{id}", profile.New(log, storage, cacheService).Users)
+	// переход на собственный профиль
+	router.Get("/en/profile", profile.New(log, storage, cacheService).Users)
+	router.Get("/en/{id}/follow", profile.New(log, storage, cacheService).Follow)
+	router.Get("/en/{id}/is_follow", profile.New(log, storage, cacheService).IsFollow)
 
 	router.Post("/en/login", login.New(log, storage, cacheService).LogData)
 	router.Post("/ru/login", login.New(log, storage, cacheService).LogData)
@@ -79,7 +90,8 @@ func main() {
 	router.Post("/en/reg", reg.New(log, storage, cacheService).RegData)
 	router.Post("/ru/reg", reg.New(log, storage, cacheService).RegData)
 
-	router.Post("/news", news.New(log, storage, cacheService).NewPost)
+	router.Post("/ru/news", news.New(log, storage, cacheService).NewPost)
+	router.Post("/en/news", news.New(log, storage, cacheService).NewPost)
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
@@ -95,8 +107,8 @@ func main() {
 	}
 
 	go func() {
-		if err := srv.ListenAndServe(); err != nil {
-			log.Error("failed to start server")
+		if err = srv.ListenAndServe(); err != nil {
+			log.Error("failed to start server", err)
 		}
 	}()
 
@@ -108,7 +120,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
-		log.Error("failed to stop server")
+	if err = srv.Shutdown(ctx); err != nil {
+		log.Error("failed to stop server", err)
 	}
 }

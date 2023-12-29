@@ -1,6 +1,7 @@
 package search
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log/slog"
@@ -30,11 +31,11 @@ func New(
 func (s *SearchService) Search(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
 	if r.URL.Path[0:3] == "/ru" {
-		temp = template.Must(template.ParseFiles("server/web/ru/search/search.html"))
+		temp = template.Must(template.ParseFiles("web/ru/search/search.html"))
 	}
 
 	if r.URL.Path[0:3] == "/en" {
-		temp = template.Must(template.ParseFiles("server/web/en/search/search.html"))
+		temp = template.Must(template.ParseFiles("web/en/search/search.html"))
 	}
 
 	//tok := cookie.Value
@@ -56,6 +57,24 @@ func (s *SearchService) Search(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *SearchService) SearchNick(w http.ResponseWriter, r *http.Request) {
+type Author struct {
+	Id   int    `json:"id"`
+	Nick string `json:"nick,omitempty"`
+}
 
+func (s *SearchService) SearchNick(w http.ResponseWriter, r *http.Request) {
+	// слой взаимодействия с базой данных
+
+	a := []Author{Author{
+		Id:   1,
+		Nick: "JohnDoe",
+	},
+		Author{
+			Id:   2,
+			Nick: "John",
+		},
+	}
+	fmt.Println("ОТПРАВИЛ")
+
+	_ = json.NewEncoder(w).Encode(a)
 }

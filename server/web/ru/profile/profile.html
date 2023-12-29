@@ -208,15 +208,32 @@
         .topnav a, .profile-menu a{
             font-family: 'Comic Sans MS', cursive, sans-serif;
         }
+        .follow-btn {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .follow-btn:active {
+            background-color: #3e8e41;
+        }
+
     </style>
 </head>
 <body class="body-back">
-<header>
+<header onload="checkFollow()">
     <div class="profile-info">
-        <img src="isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
+        <img src="/web/static/isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
         <div class="user-info">
             <h1>Имя пользователя</h1>
             <p>Дата создания страницы</p>
+            <button id="followButton" class="follow-btn" onclick="follow()">Подписаться</button>
         </div>
     </div>
 </header>
@@ -231,14 +248,44 @@
             </div>
         </div>
     </div>
-
 <div class="profile-menu">
-    <a href="http://localhost:8080/profile">Профиль</a>
-    <a href="http://localhost:8080/news">Новости</a>
-    <a href="http://localhost:8080/search">Поиск</a>
+    <a href="http://localhost:8080/ru/profile">Профиль</a>
+    <a href="http://localhost:8080/ru/news">Новости</a>
+    <a href="http://localhost:8080/ru/search">Поиск</a>
 </div>
 </body>
     <script>
+
+       function checkFollow() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response.ans === "yes") {
+                        document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+                    }
+                }
+            };
+            xhttp.open("GET", "/ru/user/{id}/isfollow", true);
+            xhttp.send();
+        }
+        function follow() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    if (response.ans === "yes") {
+                        document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+                    } else {
+                        document.getElementById("followButton").style.backgroundColor = "#4CAF50";
+                    }
+                }
+            };
+            xhttp.open("GET", "/user/{id}/follow", true);
+            xhttp.send();
+            document.getElementById("followButton").style.backgroundColor = "#3e8e41";
+        }
+
         const newsList = document.querySelector('.news-list');
 
         function addNews(authorId, author, description) {
@@ -307,6 +354,8 @@
                 .then(data => console.log(data))
                 .catch(error => console.error('Ошибка:', error));
         }
+
+
 
         // arm_url = location.protocol + "//" + location.host + "/armstrong/calculate.json";
         // function send_query(){

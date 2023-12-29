@@ -173,37 +173,37 @@
     });
 
     // Массив с данными для вывода
-    // var data = [
-    //     { userID: 101, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer1" },
-    //     { userID: 102, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer2" },
-    //     { userID: 103, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer3" },
-    //     { userID: 104, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer4" },
-    //     { userID: 105, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer5" },
-    //     { userID: 106, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer6" },
-    //     { userID: 107, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer7" },
-    //     { userID: 108, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer8" },
-    //     { userID: 109, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer9" },
-    //     { userID: 110, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer10" }
-    // ];
+    var data = [
+        { userID: 101, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer1" },
+        { userID: 102, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer2" },
+        { userID: 103, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer3" },
+        { userID: 104, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer4" },
+        { userID: 105, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer5" },
+        { userID: 106, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer6" },
+        { userID: 107, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer7" },
+        { userID: 108, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer8" },
+        { userID: 109, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer9" },
+        { userID: 110, profilePhoto: "isITQX_Q7OM.jpg", username: "adventurer10" }
+    ];
 
     // Функция, которая выводит данные на экран
-    // function displayData() {
-    //     // Очищаем результаты предыдущего поиска
-    //     document.querySelector('#results').innerHTML = '';
-    //     // Выводим результаты поиска
-    //     data.forEach(function(user) {
-    //         var result = document.createElement('div');
-    //         result.classList.add('result');
-    //         var img = document.createElement('img');
-    //         img.src = user.profilePhoto;
-    //         result.appendChild(img);
-    //         var a = document.createElement('a');
-    //         a.href = '/user/' + user.userID;
-    //         a.textContent = user.username;
-    //         result.appendChild(a);
-    //         document.querySelector('#results').appendChild(result);
-    //     });
-    // }
+    function displayData() {
+        // Очищаем результаты предыдущего поиска
+        document.querySelector('#results').innerHTML = '';
+        // Выводим результаты поиска
+        data.forEach(function(user) {
+            var result = document.createElement('div');
+            result.classList.add('result');
+            var img = document.createElement('img');
+            img.src = user.profilePhoto;
+            result.appendChild(img);
+            var a = document.createElement('a');
+            a.href = '/user/' + user.userID;
+            a.textContent = user.username;
+            result.appendChild(a);
+            document.querySelector('#results').appendChild(result);
+        });
+    }
 
     // Обработчик события загрузки страницы
     window.addEventListener("load", function() {

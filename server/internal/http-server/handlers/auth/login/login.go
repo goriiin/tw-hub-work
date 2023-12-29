@@ -32,11 +32,11 @@ func New(
 func (l *LoginService) Login(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
 	if r.URL.Path[0:3] == "/ru" {
-		temp = template.Must(template.ParseFiles("server/web/ru/sign_in/sign_in.html"))
+		temp = template.Must(template.ParseFiles("web/ru/sign_in/sign_in.html"))
 	}
 
 	if r.URL.Path[0:3] == "/en" {
-		temp = template.Must(template.ParseFiles("server/web/en/sign_in/sign_in.html"))
+		temp = template.Must(template.ParseFiles("web/en/sign_in/sign_in.html"))
 	}
 
 	err := temp.ExecuteTemplate(w, "body", nil)

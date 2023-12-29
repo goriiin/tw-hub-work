@@ -32,11 +32,11 @@ func New(
 func (reg *RegisterService) Reg(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
 	if r.URL.Path[0:3] == "/ru" {
-		temp = template.Must(template.ParseFiles("server/web/ru/sign_up/singup.html"))
+		temp = template.Must(template.ParseFiles("web/ru/sign_up/singup.html"))
 	}
 
 	if r.URL.Path[0:3] == "/en" {
-		temp = template.Must(template.ParseFiles("server/web/en/sign_up/singup.html"))
+		temp = template.Must(template.ParseFiles("web/en/sign_up/singup.html"))
 	}
 
 	err := temp.ExecuteTemplate(w, "body", nil)
