@@ -1,10 +1,9 @@
 {{ define "body" }}
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <style>
         .block {
             background-color: #3d3b39;
@@ -16,60 +15,61 @@
             padding: 30px;
             border-radius: 10px;
         }
-                 .topnav {
-                 z-index: 1001;
-                 width: 100%;
-                 background-color: #333;
-                 overflow: hidden;
-                 height: 60px;
-                 position: fixed;
-                 top: 0;
-                 left: 0;
-                 }
+        .topnav {
+            z-index: 1001;
+            width: 100%;
+            background-color: #333;
+            overflow: hidden;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
 
-                 .topnav a {
-                 float: left;
-                 color: #f2f2f2;
-                 text-align: center;
-                 padding: 14px 16px;
-                 text-decoration: none;
-                 font-size: 35px;
-                 }
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 35px;
+        }
 
-                 .topnav a, .profile-menu a {
-                     font-family: 'Comic Sans MS', cursive, sans-serif;
+        .topnav a, .profile-menu a{
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
 
-                 }
-                 .body-back {
-                    background: rgb(20, 20, 20);
-                 }
-
+        .body-back{
+            background: rgb(20, 20, 20);
+        }
     </style>
 </head>
 <body class="body-back">
 <div class="topnav">
     <a href="http://localhost:8080/ru/news">Twit-hub</a>
-    <a href="http://localhost:8080/en/login">🇺🇸</a>
+    <a href="http://localhost:8080/en/reg">🇺🇸</a>
 </div>
 
-<form id="login-form" class="block">
-    <h1>Login</h1>
+<form id="register-form" class="block">
+    <h1>Register</h1>
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required><br><br>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br><br>
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required><br><br>
-    <button type="submit">Login</button>
+    <button type="submit">Register</button>
 </form>
 <script>
-    const form = document.getElementById('login-form');
+    const form = document.getElementById('register-form');
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const email = form.elements.email.value;
+        const username = form.elements.username.value;
         const password = form.elements.password.value;
-
-        fetch('/ru/login', {
+        fetch('/en/reg', {
             method: 'POST',
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, username, password }),
             headers: {
                 'Content-Type': 'application/json'
             }

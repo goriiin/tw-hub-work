@@ -1,9 +1,9 @@
 {{ define "body" }}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Login</title>
     <style>
         .block {
             background-color: #3d3b39;
@@ -35,41 +35,40 @@
             font-size: 35px;
         }
 
-        .topnav a, .profile-menu a{
+        .topnav a, .profile-menu a {
             font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
 
-        .body-back{
+        }
+        .body-back {
             background: rgb(20, 20, 20);
         }
+
     </style>
 </head>
 <body class="body-back">
 <div class="topnav">
     <a href="http://localhost:8080/ru/news">Twit-hub</a>
-    <a href="http://localhost:8080/en/reg">🇺🇸</a>
+    <a href="http://localhost:8080/ru/login">🇷🇺</a>
 </div>
 
-<form id="register-form" class="block">
-    <h1>Register</h1>
+<form id="login-form" class="block">
+    <h1>Login</h1>
     <label for="email">Email:</label>
     <input type="email" id="email" name="email" required><br><br>
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required><br><br>
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required><br><br>
-    <button type="submit">Register</button>
+    <button type="submit">Login</button>
 </form>
 <script>
-    const form = document.getElementById('register-form');
+    const form = document.getElementById('login-form');
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         const email = form.elements.email.value;
-        const username = form.elements.username.value;
         const password = form.elements.password.value;
-        fetch('/en/reg', {
+
+        fetch('/en/login', {
             method: 'POST',
-            body: JSON.stringify({ email, username, password }),
+            body: JSON.stringify({ email, password }),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -77,9 +76,7 @@
             .then(response => response.json())
             .then(data => {
                 const token = data.token;
-                if (token !== ""){
-                    window.location.href = '/ru/news';
-                }
+                window.location.href = '/news';
             })
             .catch(error => console.error(error));
     });
