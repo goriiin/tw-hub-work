@@ -56,22 +56,24 @@ func (reg *RegisterService) RegData(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(rrr)
 	id, err := reg.s.InsertUser(&rrr)
-	if err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		user := domain.TokenUser{
-			Id:    id,
-			Email: rrr.Email,
-		}
-
-		token, _ := jwt.NewToken(user)
-
-		reg.c.SetTokenCookie(w, token, time.Hour*10)
-
-		err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
-	} else {
-		http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusNotFound)
+	if err != nil || id < 1 {
+		reg.log.Error("Insert err", err)
+		http.Redirect(w, r, r.URL.Path[0:4]+"/reg", http.StatusUnauthorized)
+		return
 	}
 
+	reg.log.Info("New User", id)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	user := domain.TokenUser{
+		Id:    id,
+		Email: rrr.Email,
+	}
+
+	token, _ := jwt.NewToken(user)
+
+	reg.c.SetTokenCookie(w, token, time.Hour*10)
+
+	err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
 }

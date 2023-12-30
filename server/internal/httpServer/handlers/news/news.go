@@ -33,14 +33,34 @@ func New(
 func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 	var temp *template.Template
 	//cookie, err := r.Cookie("token")
-	//flag, err := n.c.IsCookieValid(cookie)
+	//
+	//token, err := jwt.NewToken(domain.TokenUser{1, "123@mail.ru"})
+	//c := http.Cookie{
+	//	Name:     "token",
+	//	Value:    token,
+	//	Path:     "/",
+	//	Expires:  time.Now().Add(time.Hour),
+	//	MaxAge:   3600,
+	//	HttpOnly: true,
+	//	Secure:   false,
+	//	SameSite: http.SameSiteLaxMode,
+	//}
+	//
+	//// Устанавливаем cookie в браузере
+	//http.SetCookie(w, &c)
+	//flag, err := n.c.IsCookieValid(w, r)
 	//if err != nil {
-	//	http.Redirect(w, r, r.URL.Path[0:4]+"/wtf", http.StatusInternalServerError)
+	//	http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusInternalServerError)
 	//}
 	//
 	//if !flag {
 	//	http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusUnauthorized)
 	//}
+
+	cookie, err := r.Cookie("token")
+
+	id, _ := n.c.GetUserIdFromToken(cookie.Value)
+	fmt.Println(id)
 
 	if r.URL.Path[0:3] == "/ru" {
 		temp = template.Must(template.ParseFiles("web/ru/news/newsFeed.gohtml"))
@@ -50,21 +70,7 @@ func (n *NewsService) News(w http.ResponseWriter, r *http.Request) {
 		temp = template.Must(template.ParseFiles("web/en/news/newsFeed.gohtml"))
 	}
 
-	//tok := cookie.Value
-
-	//userId, err := n.c.GetUserIdFromToken(tok)
-	//if err != nil {
-	//
-	//}
-	//fmt.Println(userId)
-	//fmt.Println("Rendering news template")
-	//
-	//info, err := twits.ShowFeed(context.Background(), n.s, userId)
-	//if err != nil {
-	//	_, _ = fmt.Fprintf(w, err.Error())
-	//}
-
-	err := temp.ExecuteTemplate(w, "body", nil)
+	err = temp.ExecuteTemplate(w, "body", nil)
 
 	//err := temp.ExecuteTemplate(w, "body", info)
 	if err != nil {
@@ -93,16 +99,25 @@ func (n *NewsService) NewPost(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received text:", data)
 }
 
-type post struct {
-	Id       int    `json:"id"`
-	Username string `json:"username"`
-	Text     string `json:"text"`
-}
-
-// TODO сделать функцию onload и прогружать новости
 func (n *NewsService) RenderNews(w http.ResponseWriter, r *http.Request) {
 
-	p := []post{post{1, "John", "HELLLO WORLD"}, {1, "John", "my new post!!!"}}
+	//cookie, err := r.Cookie("token")
+	//tok := cookie.Value
+	//flag, _ := n.c.IsCookieValid(w, r)
+	//if !flag {
+	//	http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusUnauthorized)
+	//}
+	//id, err := n.c.GetUserIdFromToken(tok)
+	//if err != nil {
+	//	w.WriteHeader(http.StatusInternalServerError)
+	//}
 
-	_ = json.NewEncoder(w).Encode(p)
+	cookie, _ := r.Cookie("token")
+
+	id, _ := n.c.GetUserIdFromToken(cookie.Value)
+	fmt.Println(id)
+
+	ppp, _ := n.s.PostsFromSubs(id)
+
+	_ = json.NewEncoder(w).Encode(ppp)
 }

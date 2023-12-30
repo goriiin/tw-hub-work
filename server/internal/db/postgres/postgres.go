@@ -2,13 +2,10 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/lib/pq"
 	"log"
 	"os"
-	"strings"
 	"twit-hub111/internal/config"
 	"twit-hub111/internal/domain"
 )
@@ -101,26 +98,17 @@ func (s *Storage) TestSelect() error {
 // InsertUser - добавление в БД нового пользователя
 func (s *Storage) InsertUser(
 	u *domain.RegData,
-) (int, error) {
+) (uint32, error) {
 	const op = "db.postgres.InsertUser"
 
-	var id int
-	err := s.db.QueryRow(context.Background(),
-		`insert into twit_hub.public.tw_user(nick, reg_date, email, alive, pass) 
-            values ($1, now(), $2, $3, $4) 
-            on conflict (email, nick) do nothing
-            returning id;`,
-		u.Username, u.Email, true, u.Password).Scan(&id)
-	var pgErr *pq.Error
-	if errors.As(err, &pgErr) {
-		if pgErr.Code.Name() == "unique_violation" {
-			if strings.Contains(pgErr.Message, "tw_user_email_key") {
-				return -1, ErrDuplicateUserEmail
-			} else if strings.Contains(pgErr.Message, "tw_user_nick_key") {
-				return -1, ErrDuplicateUserName
-			}
-		}
-		return -1, fmt.Errorf("%s : %w", op, err)
+	var id uint32
+	err := s.db.QueryRow(context.Background(), `INSERT INTO twit_hub.public.tw_user(nick, reg_date, email, alive, pass)
+                                            VALUES ($1, now(), $2, true, $3)
+                                            on conflict do nothing
+                                            RETURNING id;`, u.Username, u.Email, u.Password).Scan(&id)
+
+	if err != nil {
+		return 0, fmt.Errorf("%s : %w", op, err)
 	}
 	return id, nil
 }
@@ -173,7 +161,7 @@ func (s *Storage) NewFollow(
 
 	_, err := s.db.Exec(context.Background(),
 		`insert into twit_hub.public.follows(user_id, subscribe_to_id) 
-            values ($1, $2)`,
+            values ($1, $2);`,
 		user.Id, author.Id)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
@@ -333,27 +321,37 @@ func (s *Storage) DeletePost(
 	return nil
 }
 
+type post struct {
+	UserId   int    `json:"id"`
+	Username string `json:"username"`
+	Text     string `json:"text"`
+}
+
 // PostsFromSubs - возвращает все посты по ID
 func (s *Storage) PostsFromSubs(
-	u *domain.User,
-) (twits []domain.Twit, err error) {
+	userId int,
+) ([]post, error) {
 	const op = "db.postgres.PostsFromSubs"
 
-	rows, err := s.db.Query(context.Background(),
-		`select Id, author_id, text, photo, date
-             from twit_hub.public.twit 
-             where author_id in (select id 
-                                 from twit_hub.public.follows
-                                 where user_id=&1)`,
-		u.Id)
+	rows, err := s.db.Query(context.Background(), `
+        SELECT tw_user.id AS userId, tw_user.nick AS username, twit.text
+FROM twit
+JOIN tw_user ON twit.author_id = tw_user.id
+JOIN follows ON tw_user.id = follows.subscribe_to_id
+WHERE follows.user_id = $1
+ORDER BY twit.date DESC;
+
+    `, userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
+	twits := make([]post, 1)
+
 	for rows.Next() {
-		var twit domain.Twit
-		err = rows.Scan(&twit.Id, &twit.AuthorId, &twit.Text, &twit.Photo, &twit.Date)
+		var twit post
+		err = rows.Scan(&twit.UserId, &twit.Username, &twit.Text)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
@@ -425,6 +423,40 @@ ORDER BY twit.date DESC;
 	for rows.Next() {
 		var post domain.Post
 		err = rows.Scan(&post.PostID, &post.UserID, &post.Username, &post.Text, &post.Date, &post.IsLiked, &post.LikesCount, &post.IsDisliked, &post.DislikesCount)
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", op, err)
+		}
+		posts = append(posts, post)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return posts, nil
+}
+
+func (s *Storage) MyPost(
+	userId int,
+) ([]post, error) {
+	const op = "db.postgres.UserTwits"
+
+	rows, err := s.db.Query(context.Background(), `
+        SELECT tw_user.id AS userId, tw_user.nick AS username, twit.text
+FROM twit
+JOIN tw_user ON twit.author_id = tw_user.id
+WHERE tw_user.id = $1
+ORDER BY twit.date DESC;
+    `, userId)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	defer rows.Close()
+
+	posts := make([]post, 1)
+
+	for rows.Next() {
+		var post post
+		err = rows.Scan(&post.UserId, &post.Username, &post.Text)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}

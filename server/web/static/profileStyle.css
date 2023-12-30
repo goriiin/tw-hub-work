@@ -1,0 +1,217 @@
+body {
+    font-family: Arial, sans-serif;
+}
+header {
+    margin-top: 100px;
+    background-color: rgb(61, 59, 57);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 10px;
+    margin-left: 200px;
+    margin-right: 60px;
+    color: #d7d7d7;
+}
+.profile-info {
+    display: flex;
+    align-items: flex-start;  /* Изменено */
+}
+.profile-pic {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin-right: 20px;   /* Новое */
+}
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+.show-info-btn {
+    border: none;
+    background-color: inherit;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.show-info-btn:hover {background: #eee;}
+.dop-info {
+    display: none;
+    margin-top: 10px;  /* Изменено */
+}
+
+.topnav {
+    z-index: 1001;
+    width: 100%;
+    background-color: #333;
+    overflow: hidden;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 35px;
+}
+
+.body-back{
+    background: rgb(20, 20, 20);
+}
+
+.heart-btn {
+    background-color: #555555;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 30%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.heart-btn:hover {
+    background-color: lightgray;
+}
+
+.heart-btn.active {
+    background-color: red;
+}
+
+.news-feed {
+    order: 2;
+    /*width: 70%; !* Изменили ширину на 70% *!*/
+    font-family: Arial, sans-serif;
+    overflow: auto;
+    height: calc(100% - 120px);
+    position: relative;
+    top: 30px;
+    border-radius: 10px;
+}
+
+.news-item {
+    border-bottom: 1px solid #141414;
+    background: #3d3b39;
+    padding: 10px;
+    color: #eeeeee;
+}
+
+.news-item:last-child {
+    border-bottom: none;
+}
+
+.news-item h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.news-item a {
+    margin: 5px 0;
+    font-size: 14px;
+    border-radius: 10px;
+    color: #d7d7d7;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.form-container textarea {
+    resize: none;
+    height: 150px;
+    border-radius: 10px;
+    overflow: auto;
+    border-width: 0;
+    display: inline-block;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.form-container button {
+    background-color: #141414;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.news-list{
+    margin-top: 36px;
+}
+
+.profile-menu {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 150px;
+    height: calc(100% - 60px);
+    background: rgb(20, 20, 20);
+    padding: 10px;
+    z-index: 1;
+}
+.profile-menu a {
+    text-align: left;
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #d7d7d7;
+    font-size: 25px;
+    text-decoration-line: none;
+}
+
+.profile-menu a:hover {
+    background-color: #555;
+}
+
+.aaaaa {
+    margin-left: 210px;
+    margin-right: 100px;
+    display: block;
+    flex-direction: column;
+    z-index: 2;
+}
+.form-container button:hover {
+    background-color: #141414;
+}
+
+.form-container {
+    order: 1;
+    margin-top: 10px;
+    align-self: center;
+    position: relative;
+}
+
+#own-news-btn {
+    position: absolute; /* устанавливаем позицию кнопки как absolute */
+    top: 100%; /* размещаем кнопку внизу относительно родительского блока */
+    right: 0; /* выравниваем кнопку слева от родительского блока */
+    background: #587a60;
+}
+.topnav a, .profile-menu a{
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+.follow-btn {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.follow-btn:active {
+    background-color: #3e8e41;
+}

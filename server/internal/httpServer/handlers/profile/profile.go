@@ -1,6 +1,7 @@
 package profile
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log/slog"
@@ -64,6 +65,7 @@ func (u *UserService) User(w http.ResponseWriter, r *http.Request) {
 	//if err != nil {
 	//	_, _ = fmt.Fprintf(w, err.Error())
 	//}
+
 	err := temp.ExecuteTemplate(w, "body", nil)
 
 	//err = temp.ExecuteTemplate(w, "body", info)
@@ -72,8 +74,38 @@ func (u *UserService) User(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *UserService) Profile(w http.ResponseWriter, r *http.Request) {
+func (u *UserService) RenderNews(w http.ResponseWriter, r *http.Request) {
 
+	//cookie, err := r.Cookie("token")
+	//tok := cookie.Value
+	//flag, _ := n.c.IsCookieValid(w, r)
+	//if !flag {
+	//	http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusUnauthorized)
+	//}
+	//id, err := n.c.GetUserIdFromToken(tok)
+	//if err != nil {
+	//	w.WriteHeader(http.StatusInternalServerError)
+	//}
+
+	cookie, _ := r.Cookie("token")
+
+	id, _ := u.c.GetUserIdFromToken(cookie.Value)
+	fmt.Println(id)
+
+	ppp, _ := u.s.MyPost(id)
+
+	_ = json.NewEncoder(w).Encode(ppp)
+}
+
+func (u *UserService) Profile(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := r.Cookie("token")
+
+	id, _ := u.c.GetUserIdFromToken(cookie.Value)
+	fmt.Println(id)
+
+	aaa, _ := u.s.SearchUserID(id)
+
+	_ = json.NewEncoder(w).Encode(aaa)
 }
 
 func (u *UserService) Follow(w http.ResponseWriter, r *http.Request) {

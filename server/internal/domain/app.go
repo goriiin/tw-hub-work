@@ -11,7 +11,7 @@ func NewApp() *App {
 }
 
 type UserData struct {
-	Id    int    `json:"id"`
+	Id    uint32 `json:"id"`
 	Email string `json:"email"`
 	Pass  string `json:"pass"`
 }
@@ -23,6 +23,6 @@ type RegData struct {
 }
 
 type TokenUser struct {
-	Id    int    `json:"id"`
+	Id    uint32 `json:"id"`
 	Email string `json:"email"`
 }

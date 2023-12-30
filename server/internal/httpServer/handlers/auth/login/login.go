@@ -70,6 +70,8 @@ func (l *LoginService) LogData(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
+		l.c.DelCookie(w, r)
+
 		user := domain.TokenUser{
 			Id:    data.Id,
 			Email: data.Email,
@@ -78,6 +80,15 @@ func (l *LoginService) LogData(w http.ResponseWriter, r *http.Request) {
 		token, _ := jwt.NewToken(user)
 
 		l.c.SetTokenCookie(w, token, time.Hour*10)
+
+		cookie, err := r.Cookie("token")
+		fmt.Println(cookie)
+
+		ttt, err := l.c.GetUserIdFromToken(token)
+		if err != nil {
+			http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusInternalServerError)
+		}
+		fmt.Println(ttt)
 
 		err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
 	} else {

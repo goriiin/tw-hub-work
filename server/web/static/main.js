@@ -53,6 +53,7 @@ function addOwnNews() {
         .then(data => console.log(data))
         .catch(error => console.error('Ошибка:', error));
 }
+
 function renderNews() {
     fetch('/news/render')
         .then(response => response.json())
@@ -65,6 +66,7 @@ function renderNews() {
         })
         .catch(error => console.error(error));
 }
+
 
 document.querySelector('form').addEventListener('submit', async function(event) {
     event.preventDefault();

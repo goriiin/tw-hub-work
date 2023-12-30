@@ -8,7 +8,7 @@ import (
 	"log/slog"
 	"time"
 	"twit-hub111/internal/db/postgres"
-	"twit-hub111/internal/lib/sl"
+	"twit-hub111/internal/domain"
 )
 
 // TODO: согласование с БД
@@ -36,7 +36,11 @@ func New(
 }
 
 // RegisterNewUser TODO: переделать логику - связать с таблицей
-func (a *Auth) RegisterNewUser(ctx context.Context, email string, nick string, pass string) (id int64, err error) {
+func (a *Auth) RegisterNewUser(
+	email string,
+	nick string,
+	pass string,
+) (uint32, error) {
 	const op = "Auth.RegisterNewUser"
 
 	log := a.log.With(
@@ -49,19 +53,24 @@ func (a *Auth) RegisterNewUser(ctx context.Context, email string, nick string, p
 	// Генерируем хэш и соль для пароля.
 	passHash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MaxCost)
 	if err != nil {
-		log.Error("failed to generate password hash", sl.Err(err))
+		log.Error("failed to generate password hash", err)
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
 	_ = passHash
 
-	// Сохраняем пользователя в БД
-	//id, err := a.userStorage.SaveUser(ctx, email, passHash)
-	//if err != nil {
-	//	logger.Error("failed to save profile", sl.Err(err))
-	//
-	//	return 0, fmt.Errorf("%s: %w", op, err)
-	//}
+	u := domain.RegData{
+		Email:    email,
+		Username: nick,
+		Password: string(passHash),
+	}
+	//Сохраняем пользователя в БД
+	id, err := a.s.InsertUser(&u)
+	if err != nil {
+		a.log.Error("failed to save profile", err)
+
+		return 0, fmt.Errorf("%s: %w", op, err)
+	}
 
 	return id, nil
 }

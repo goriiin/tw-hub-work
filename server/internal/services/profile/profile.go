@@ -1,7 +1,6 @@
 package profile
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -25,10 +24,13 @@ func New(
 	}
 }
 
-func UserPosts(ctx context.Context, s *postgres.Storage, userId int) ([]domain.Post, error) {
+func UserPosts(
+	s *postgres.Storage,
+	userId int,
+) ([]domain.Post, error) {
 	const op = "services.twits.ShowFeed"
 
-	posts, err := s.UserTwits(ctx, userId)
+	posts, err := s.UserTwits(userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -37,13 +39,12 @@ func UserPosts(ctx context.Context, s *postgres.Storage, userId int) ([]domain.P
 }
 
 func UserInfo(
-	ctx context.Context,
 	s *postgres.Storage,
 	userId int,
 ) (author *domain.Author, err error) {
 	const op = "services.twits.UserInfo"
 
-	author, err = s.SearchUserID(ctx, userId)
+	author, err = s.SearchUserID(userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}

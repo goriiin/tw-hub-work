@@ -16,7 +16,7 @@ func ShowFeed(
 ) ([]byte, error) {
 	const op = "services.twits.ShowFeed"
 
-	posts, err := s.FeedTwits(ctx, userId)
+	posts, err := s.FeedTwits(userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
@@ -38,7 +38,7 @@ func AddRating(
 ) error {
 	const op = "services.twits.AddRating"
 
-	err := s.NewLike(ctx, userId, postId)
+	err := s.NewLike(userId, postId)
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
@@ -64,7 +64,7 @@ func DelPost(
 	s *postgres.Storage,
 	twitID int,
 ) {
-	err := s.DeletePost(ctx, twitID)
+	err := s.DeletePost(twitID)
 	if err != nil {
 		return
 	}
