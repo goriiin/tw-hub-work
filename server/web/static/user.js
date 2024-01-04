@@ -30,3 +30,33 @@ function follow() {
 
 
 
+
+const newsList = document.querySelector('.news-list');
+
+function addNews(authorId, author, description) {
+    const newsItem = document.createElement('div');
+    newsItem.className = 'news-item';
+
+    const newsDescription = document.createElement('p');
+    newsDescription.textContent = description;
+
+    const newsAuthor = document.createElement('a'); /* Добавили элемент для автора */
+    newsAuthor.textContent = author;
+    newsAuthor.id = authorId
+    newsAuthor.href = '/ru/user/' + authorId;
+
+    // const likeButton = document.createElement('button'); /* Добавили кнопку "Нравится" */
+    // likeButton.textContent = '❤️';
+    // likeButton.className = 'heart-btn';
+    // likeButton.onclick = 'changeColor()';
+
+    // const commentButton = document.createElement('button'); /* Добавили кнопку "Комментарий" */
+    // commentButton.textContent = 'Комментарий';
+    newsItem.appendChild(newsAuthor);
+    newsItem.appendChild(newsDescription);
+    // newsItem.appendChild(likeButton);
+
+    // newsItem.appendChild(commentButton);
+
+    newsList.appendChild(newsItem);
+}

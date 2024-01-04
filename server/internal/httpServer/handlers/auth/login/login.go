@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
-	"time"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/domain"
 	"twit-hub111/internal/lib/cookies"
@@ -59,19 +58,14 @@ func (l *LoginService) LogData(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Println(lll)
 
 	data, err := l.s.UserHashPass(lll.Email)
+	fmt.Println(data, lll)
 	if err != nil {
 		l.log.Error("DB ERROR", err)
 	}
 
 	if lll.Password == data.Pass {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
-		l.c.DelCookie(w, r)
-
 		user := domain.TokenUser{
 			Id:    data.Id,
 			Email: data.Email,
@@ -79,18 +73,29 @@ func (l *LoginService) LogData(w http.ResponseWriter, r *http.Request) {
 
 		token, _ := jwt.NewToken(user)
 
-		l.c.SetTokenCookie(w, token, time.Hour*10)
-
-		cookie, err := r.Cookie("token")
-		fmt.Println(cookie)
-
-		ttt, err := l.c.GetUserIdFromToken(token)
-		if err != nil {
-			http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusInternalServerError)
+		cookie := http.Cookie{
+			Name:     "token",
+			Value:    token,
+			MaxAge:   3500,
+			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
 		}
-		fmt.Println(ttt)
+		http.SetCookie(w, &cookie)
 
-		err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
+		l.c.SetTokenCookie(w, token)
+
+		t, err := r.Cookie("token")
+		if err != nil {
+			fmt.Println("ошибка в получении", err)
+		} else {
+			if t.Value != "" {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
+			}
+
+		}
+		fmt.Println(t)
 	} else {
 		http.Redirect(w, r, r.URL.Path[0:4]+"/login", http.StatusNotFound)
 	}

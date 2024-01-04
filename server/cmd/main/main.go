@@ -68,6 +68,7 @@ func main() {
 	router.Get("/ru/user/{id}/follow", httpServ.U.Profile)
 	router.Get("/ru/user/{id}/is_follow", httpServ.U.Profile)
 	router.Get("/ru/user/{id}/unfollow", httpServ.U.Profile)
+	router.Get("/ru/profile", httpServ.U.Profile)
 
 	router.Get("/en/login", httpServ.L.Login)
 	router.Get("/en/reg", httpServ.R.Reg)
@@ -91,6 +92,8 @@ func main() {
 
 	router.Get("/search/{nickname}", httpServ.S.SearchNick)
 	router.Get("/news/render", httpServ.N.RenderNews)
+	router.Get("/profile/render", httpServ.U.RenderNewsProf)
+	router.Get("/user/{id}/render", httpServ.U.RenderNews)
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 

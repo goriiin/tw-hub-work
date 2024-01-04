@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="/web/static/profileStyle.css">
 </head>
 <body class="body-back" onload="renderNews()">
-<header onload="checkFollow()">
+<header>
     <div class="profile-info">
         <img src="/web/static/isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
         <div class="user-info">
-            <h1 id="nickname">Имя пользователя</h1>
+            <h1 id="nickname">{{ .Username}}</h1>
 {{/*            <p>Дата создания страницы</p>*/}}
 {{/*            <button id="followButton" class="follow-btn" onclick="follow()">Подписаться</button>*/}}
         </div>
@@ -36,25 +36,19 @@
 </body>
 </body>
 <script src="/web/static/user.js"></script>
-<script src="/web/static/main.js"></script>
 <script>
-    const id = window.location.pathname.split('/')[2];
-
-    fetch('/ru/user/' + id, {
-        method: `POST`,
-        headers: {
-            'Content-Type': 'aplication/json'
-        },
-        body: JSON.stringify({id: id})
-
-    })
-        .then(response =>  => response.json()
-        .then(data => {
-
-        }
-    })
-
-        })
+    function renderNews() {
+        fetch('/profile/render')
+            .then(response => response.json())
+            .then(data => {
+                for (let i = 0; i < data.length; i++) {
+                    const news = data[i];
+                    addNews(news.userId, news.username, news.text);
+                    console.log(news.userId, news.username, news.text)
+                }
+            })
+            .catch(error => console.error(error));
+    }
 </script>
 </html>
 {{ end }}

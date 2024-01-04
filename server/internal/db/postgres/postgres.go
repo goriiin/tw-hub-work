@@ -120,9 +120,9 @@ func (s *Storage) InsertPost(
 	const op = "db.postgres.InsertPost"
 
 	_, err := s.db.Exec(context.Background(),
-		`insert into twit_hub.public.twit(text, photo, author_id, date) 
-            values ($1, $2, $3, now());`,
-		t.Text, t.Photo, t.AuthorId)
+		`insert into twit_hub.public.twit(text, author_id, date) 
+            values ($1, $2, now());`,
+		t.Text, t.AuthorId)
 	if err != nil {
 
 		return fmt.Errorf("%s: %w", op, err)
@@ -218,27 +218,56 @@ func (s *Storage) UserLikes(
 // SearchUserID - возвращает публичные данные пользователя по ID
 func (s *Storage) SearchUserID(
 	id int,
-) (u *domain.Author, err error) {
+) (*domain.Author, error) {
 	const op = "db.postgres.SearchUserID"
 
-	rows, err := s.db.Query(context.Background(),
-		`select id, nick, email, reg_date, photo
+	var a = domain.Author{}
+	err := s.db.QueryRow(context.Background(),
+		`select id, nick
              from twit_hub.public.tw_user
-             where id=$1`,
-		id)
+             where id=$1`, id).Scan(&a.Id, &a.Nick)
+
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	return &a, nil
+}
+
+// SearchUserNick - возвращает публичные данные пользователя по ID
+func (s *Storage) SearchUserNick(
+	nick string,
+) ([]domain.Author, error) {
+	const op = "db.postgres.SearchUserNick"
+
+	nick = "%" + nick + "%"
+
+	rows, err := s.db.Query(context.Background(),
+		`select id, nick
+             from twit_hub.public.tw_user
+             where nick like $1`,
+		nick)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
+	users := make([]domain.Author, 0)
 	for rows.Next() {
-		err = rows.Scan(&u.Id, &u.Nick, &u.Email, &u.RegDate, &u.Photo)
+		var (
+			id       int
+			nickname string
+		)
+		err = rows.Scan(&id, &nickname)
 		if err != nil {
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
+		if id != 0 && nick != "" {
+			users = append(users, domain.Author{Id: id, Nick: nickname})
+		}
 	}
 
-	return u, nil
+	return users, nil
 }
 
 // SearchUserTwits - возвращает все посты пользователя
@@ -340,7 +369,6 @@ JOIN tw_user ON twit.author_id = tw_user.id
 JOIN follows ON tw_user.id = follows.subscribe_to_id
 WHERE follows.user_id = $1
 ORDER BY twit.date DESC;
-
     `, userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
@@ -401,7 +429,7 @@ ORDER BY twit.date DESC;
 
 func (s *Storage) UserTwits(
 	userId int,
-) (posts []domain.Post, err error) {
+) ([]domain.Post, error) {
 	const op = "db.postgres.UserTwits"
 
 	rows, err := s.db.Query(context.Background(), `
@@ -419,6 +447,8 @@ ORDER BY twit.date DESC;
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
+
+	posts := make([]domain.Post, 0)
 
 	for rows.Next() {
 		var post domain.Post
@@ -440,31 +470,42 @@ func (s *Storage) MyPost(
 ) ([]post, error) {
 	const op = "db.postgres.UserTwits"
 
+	fmt.Println(op, userId)
+
 	rows, err := s.db.Query(context.Background(), `
-        SELECT tw_user.id AS userId, tw_user.nick AS username, twit.text
-FROM twit
-JOIN tw_user ON twit.author_id = tw_user.id
-WHERE tw_user.id = $1
-ORDER BY twit.date DESC;
-    `, userId)
+        SELECT author_id, tw_user.nick, twit.text
+        FROM twit
+            INNER JOIN tw_user ON twit.author_id = tw_user.id
+        WHERE author_id = $1
+        ORDER BY twit.date DESC;
+         `, userId)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	defer rows.Close()
 
-	posts := make([]post, 1)
+	twits := make([]post, 1)
 
 	for rows.Next() {
-		var post post
-		err = rows.Scan(&post.UserId, &post.Username, &post.Text)
+		fmt.Println(rows)
+		var (
+			id   int
+			name string
+			text string
+		)
+		err = rows.Scan(&id, &name, &text)
 		if err != nil {
+			fmt.Println(err)
 			return nil, fmt.Errorf("%s: %w", op, err)
 		}
-		posts = append(posts, post)
-	}
-	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("%s: %w", op, err)
+		fmt.Println(id, name, text)
+		twit := post{
+			UserId:   id,
+			Username: name,
+			Text:     text,
+		}
+		twits = append(twits, twit)
 	}
 
-	return posts, nil
+	return twits, nil
 }

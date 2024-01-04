@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
-	"time"
 	"twit-hub111/internal/db/postgres"
 	"twit-hub111/internal/domain"
 	"twit-hub111/internal/lib/cookies"
@@ -73,7 +72,7 @@ func (reg *RegisterService) RegData(w http.ResponseWriter, r *http.Request) {
 
 	token, _ := jwt.NewToken(user)
 
-	reg.c.SetTokenCookie(w, token, time.Hour*10)
+	reg.c.SetTokenCookie(w, token)
 
 	err = json.NewEncoder(w).Encode(map[string]string{"token": "123"})
 }

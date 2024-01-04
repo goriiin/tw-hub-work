@@ -3,6 +3,7 @@ package search
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -65,16 +66,11 @@ type Author struct {
 func (s *SearchService) SearchNick(w http.ResponseWriter, r *http.Request) {
 	// слой взаимодействия с базой данных
 
-	a := []Author{Author{
-		Id:   1,
-		Nick: "JohnDoe",
-	},
-		Author{
-			Id:   2,
-			Nick: "John",
-		},
-	}
-	fmt.Println("ОТПРАВИЛ")
+	nick := chi.URLParam(r, "nickname")
+
+	a, _ := s.s.SearchUserNick(nick)
+
+	fmt.Println(a)
 
 	_ = json.NewEncoder(w).Encode(a)
 }

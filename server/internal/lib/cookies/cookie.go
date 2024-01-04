@@ -22,22 +22,17 @@ func NewCacheService(appCache *cache.Cache, log *slog.Logger) *CacheService {
 	}
 }
 
-func (c *CacheService) SetTokenCookie(w http.ResponseWriter, token string, duration time.Duration) {
+func (c *CacheService) SetTokenCookie(w http.ResponseWriter, token string) {
 	// Создаем cookie с именем "token" и значением, равным сгенерированному токену
-
-	cookie := http.Cookie{
+	cookie := &http.Cookie{
 		Name:     "token",
 		Value:    token,
 		Path:     "/",
-		Expires:  time.Now().Add(duration),
 		MaxAge:   3600,
 		HttpOnly: true,
 		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
 	}
-
-	// Устанавливаем cookie в браузере
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 }
 
 func (c *CacheService) DeleteExpiredToken(w http.ResponseWriter, r *http.Request) {
@@ -61,18 +56,13 @@ func (c *CacheService) DeleteExpiredToken(w http.ResponseWriter, r *http.Request
 }
 
 func (c *CacheService) DelCookie(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("my_token")
-	if err != nil {
-		return
-	}
-	cookie = &http.Cookie{
-		Name:     "my_token",
+	cookie := &http.Cookie{
+		Name:     "token",
 		Value:    "",
 		Path:     "/",
 		MaxAge:   0,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
+		HttpOnly: false,
+		Secure:   false,
 	}
 	http.SetCookie(w, cookie)
 }
@@ -89,12 +79,14 @@ func (c *CacheService) GetUserIdFromToken(tokenString string) (int, error) {
 		return []byte(domain.NewApp().Secret), nil
 	})
 	if err != nil {
+		fmt.Println(err)
 		return -1, err
 	}
 
 	// Извлекаем userid из токена
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
+		fmt.Println(err)
 		return -1, fmt.Errorf("invalid claims format")
 	}
 	i, ok := claims["uid"].(float64)

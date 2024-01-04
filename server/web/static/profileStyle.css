@@ -117,7 +117,7 @@ header {
 
 .news-item a {
     margin: 5px 0;
-    font-size: 14px;
+    font-size: 20px;
     border-radius: 10px;
     color: #d7d7d7;
     font-family: 'Comic Sans MS', cursive, sans-serif;
@@ -154,11 +154,12 @@ header {
     position: fixed;
     top: 60px;
     left: 0;
-    width: 150px;
+    width: 140px;
     height: calc(100% - 60px);
     background: rgb(20, 20, 20);
     padding: 10px;
     z-index: 1;
+    font-family: Arial, sans-serif;
 }
 .profile-menu a {
     text-align: left;

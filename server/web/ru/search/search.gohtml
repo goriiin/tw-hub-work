@@ -25,7 +25,41 @@
 <div id="results">
 </div>
 </body>
+<script>
+    document.querySelector('form').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        // Получаем значение поля ввода
+        const search = document.querySelector('#search').value;
+        // Отправляем запрос на сервер
+        const response = await fetch('/search/' + search)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                console.log(data)
+                // Очищаем результаты предыдущего поиска
+                document.getElementById('results').innerHTML = '';
+                // Выводим результаты поиска
+                data.forEach(function(user) {
+                    var result = document.createElement('div');
+                    result.className = 'result';
 
-<script src="/web/static/main.js"></script>
+                    var img = document.createElement("img");
+                    img.src = "/web/static/isITQX_Q7OM.jpg";
+                    result.appendChild(img);
+
+                    console.log(user)
+
+                    var a = document.createElement("a");
+                    a.href = '/ru/user/' + user.id;
+                    a.textContent = user.nick;
+                    result.appendChild(a);
+                    document.getElementById('results').appendChild(result);
+                });
+            });
+    });
+</script>
+
+{{/*<script src="/web/static/main.js"></script>*/}}
 </html>
 {{ end }}

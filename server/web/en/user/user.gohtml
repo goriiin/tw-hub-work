@@ -1,0 +1,55 @@
+{{ define "body" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Профиль</title>
+        <link rel="stylesheet" href="/web/static/profileStyle.css">
+    </head>
+    <body id="{{.Id}}" class="body-back" onload="renderNews()">
+    <header>
+        <div class="profile-info">
+            <img src="/web/static/isITQX_Q7OM.jpg" alt="Профильная фотография" class="profile-pic">
+            <div class="user-info">
+                <h1 id="nickname">{{ .Username}}</h1>
+                {{/*            <p>Дата создания страницы</p>*/}}
+                {{/*            <button id="followButton" class="follow-btn" onclick="follow()">Подписаться</button>*/}}
+            </div>
+        </div>
+    </header>
+    <div class="topnav">
+        <a href="http://localhost:8080/ru/news">Twit-hub</a>
+        <a href="http://localhost:8080/en/news">🇷🇺</a>
+    </div>
+    <div class="aaaaa">
+        <div class="news-feed">
+            <div class="news-list">
+            </div>
+        </div>
+    </div>
+    <div class="profile-menu">
+        <a href="http://localhost:8080/en/profile">Profile</a>
+        <a href="http://localhost:8080/en/news">Events</a>
+        <a href="http://localhost:8080/en/search">Search</a>
+    </div>
+    </body>
+    </body>
+    <script src="/web/static/user.js"></script>
+    <script>
+
+        function renderNews() {
+            fetch('/user/{{.Id}}/render')
+                .then(response => response.json())
+                .then(data => {
+                    for (let i = 0; i < data.length; i++) {
+                        const news = data[i];
+                        addNews(news.userId, news.username, news.text);
+                        console.log(news.userId, news.username, news.text)
+                    }
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+    </html>
+{{ end }}
